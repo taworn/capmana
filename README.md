@@ -6,5 +6,4 @@
 **Tools and Library Usage**
 
  - Android Studio v.2.1.2
- 
- 
+

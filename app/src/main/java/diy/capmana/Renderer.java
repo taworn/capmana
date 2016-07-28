@@ -4,6 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,6 +17,8 @@ import javax.microedition.khronos.opengles.GL10;
  * A renderer class.
  */
 public class Renderer implements GLSurfaceView.Renderer {
+
+    private static final String TAG = Renderer.class.getSimpleName();
 
     private static final int STRIDE_SIZE = 7 * 4;  // vertex + color, result in bytes
 
@@ -30,6 +33,9 @@ public class Renderer implements GLSurfaceView.Renderer {
 
     // a triangle in buffer
     private final FloatBuffer verticesId;
+
+    private long timeStart;
+    private int frameCount;
 
     public Renderer() {
         // this is a model we want to draw, a triangle
@@ -110,6 +116,9 @@ public class Renderer implements GLSurfaceView.Renderer {
         float near = 1.0f;
         float far = 25.0f;
         Matrix.frustumM(projectionMatrix, 0, left, right, bottom, top, near, far);
+
+        timeStart = System.currentTimeMillis();
+        frameCount = 0;
     }
 
     @Override
@@ -117,10 +126,19 @@ public class Renderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
 
         long time = SystemClock.uptimeMillis() % 10000L;
-        float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
+        float angleInDegrees = (360.0f / 1000.0f) * ((int) time);
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.rotateM(modelMatrix, 0, angleInDegrees, 0.0f, 1.0f, 0.0f);
         drawTriangle(verticesId);
+
+        frameCount++;
+        long timeUsage = System.currentTimeMillis() - timeStart;
+        if (timeUsage > 1000) {
+            long fps = frameCount * 1000 / timeUsage;
+            Log.d(TAG, "FPS: " + fps);
+            timeStart = System.currentTimeMillis();
+            frameCount = 0;
+        }
     }
 
     private void drawTriangle(FloatBuffer triangleBuffer) {
