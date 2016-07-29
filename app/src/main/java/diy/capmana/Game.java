@@ -1,10 +1,14 @@
 package diy.capmana;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -14,11 +18,16 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * A renderer class.
+ * A game class.
  */
-public class Renderer implements GLSurfaceView.Renderer {
+public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
-    private static final String TAG = Renderer.class.getSimpleName();
+    private static final String TAG = Game.class.getSimpleName();
+
+    private GestureDetector detector;
+
+    private long timeStart;
+    private int frameCount;
 
     private static final int STRIDE_SIZE = 7 * 4;  // vertex + color, result in bytes
 
@@ -26,18 +35,23 @@ public class Renderer implements GLSurfaceView.Renderer {
     private int positionHandle;
     private int colorHandle;
 
-    private float[] modelMatrix = new float[16];
+    private float modelX;
+    private float modelY;
+    private float modelDx;
+    private float modelDy;
+
+    private float[] translateMatrix = new float[16];
+    private float[] rotateMatrix = new float[16];
     private float[] viewMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
     private float[] mvpMatrix = new float[16];
 
     // a triangle in buffer
-    private final FloatBuffer verticesId;
+    private FloatBuffer verticesId;
 
-    private long timeStart;
-    private int frameCount;
+    public Game(Context context) {
+        detector = new GestureDetector(context, new GestureListener());
 
-    public Renderer() {
         // this is a model we want to draw, a triangle
         final float[] verticesData = {
                 // X, Y, Z, R, G, B, A
@@ -47,6 +61,11 @@ public class Renderer implements GLSurfaceView.Renderer {
         };
         verticesId = ByteBuffer.allocateDirect(verticesData.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
         verticesId.put(verticesData).position(0);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        return detector.onTouchEvent(event);
     }
 
     @Override
@@ -119,6 +138,11 @@ public class Renderer implements GLSurfaceView.Renderer {
 
         timeStart = System.currentTimeMillis();
         frameCount = 0;
+
+        modelX = 0.0f;
+        modelY = 0.0f;
+        modelDx = 0.0f;
+        modelDy = 0.0f;
     }
 
     @Override
@@ -127,18 +151,18 @@ public class Renderer implements GLSurfaceView.Renderer {
 
         long time = SystemClock.uptimeMillis() % 10000L;
         float angleInDegrees = (360.0f / 1000.0f) * ((int) time);
-        Matrix.setIdentityM(modelMatrix, 0);
-        Matrix.rotateM(modelMatrix, 0, angleInDegrees, 0.0f, 1.0f, 0.0f);
-        drawTriangle(verticesId);
 
-        frameCount++;
-        long timeUsage = System.currentTimeMillis() - timeStart;
-        if (timeUsage > 1000) {
-            long fps = frameCount * 1000 / timeUsage;
-            Log.d(TAG, "FPS: " + fps);
-            timeStart = System.currentTimeMillis();
-            frameCount = 0;
-        }
+        Matrix.setIdentityM(translateMatrix, 0);
+        Matrix.translateM(translateMatrix, 0, modelX + modelDx, modelY + modelDy, 0);
+        Matrix.setIdentityM(rotateMatrix, 0);
+        Matrix.rotateM(rotateMatrix, 0, angleInDegrees, 0.0f, 1.0f, 0.0f);
+        drawTriangle(verticesId);
+        modelX += modelDx;
+        modelY += modelDy;
+        modelDx = 0.0f;
+        modelDy = 0.0f;
+
+        fps();
     }
 
     private void drawTriangle(FloatBuffer triangleBuffer) {
@@ -153,7 +177,8 @@ public class Renderer implements GLSurfaceView.Renderer {
         GLES20.glEnableVertexAttribArray(colorHandle);
 
         // combines model, view, projection matrices and passes it in
-        Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, modelMatrix, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, rotateMatrix, 0, translateMatrix, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, mvpMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, mvpMatrix, 0);
         GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
@@ -174,6 +199,82 @@ public class Renderer implements GLSurfaceView.Renderer {
             }
         }
         return handle;
+    }
+
+    private void fps() {
+        frameCount++;
+        long timeUsage = System.currentTimeMillis() - timeStart;
+        if (timeUsage > 1000) {
+            long fps = frameCount * 1000 / timeUsage;
+            timeStart = System.currentTimeMillis();
+            frameCount = 0;
+            Log.d(TAG, "FPS: " + fps);
+        }
+    }
+
+    public void onSwipeTop() {
+        Log.d(TAG, "onSwipeTop");
+        modelDy = -0.1f;
+    }
+
+    public void onSwipeLeft() {
+        Log.d(TAG, "onSwipeLeft");
+        modelDx = -0.1f;
+    }
+
+    public void onSwipeRight() {
+        Log.d(TAG, "onSwipeRight");
+        modelDx = 0.1f;
+    }
+
+    public void onSwipeBottom() {
+        Log.d(TAG, "onSwipeBottom");
+        modelDy = 0.1f;
+    }
+
+    private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        private static final int SWIPE_THRESHOLD = 100;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            boolean result = false;
+            try {
+                float diffY = e2.getY() - e1.getY();
+                float diffX = e2.getX() - e1.getX();
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (diffX > 0) {
+                            onSwipeRight();
+                        }
+                        else {
+                            onSwipeLeft();
+                        }
+                    }
+                    result = true;
+                }
+                else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (diffY > 0) {
+                        onSwipeBottom();
+                    }
+                    else {
+                        onSwipeTop();
+                    }
+                }
+                result = true;
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return result;
+        }
+
     }
 
 }

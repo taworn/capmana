@@ -29,8 +29,10 @@ public class MainActivity extends Activity {
 
         surfaceView = (GLSurfaceView) findViewById(R.id.surface_view);
         if (surfaceView != null) {
+            Game game = new Game(this);
             surfaceView.setEGLContextClientVersion(2);
-            surfaceView.setRenderer(new Renderer());
+            surfaceView.setOnTouchListener(game);
+            surfaceView.setRenderer(game);
             surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         }
     }
