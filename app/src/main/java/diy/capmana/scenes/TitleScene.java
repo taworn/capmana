@@ -15,12 +15,14 @@ public class TitleScene extends Scene {
 
     @Override
     public void init() {
+        super.init();
         Log.d(TAG, "init() called");
     }
 
     @Override
     public void finish() {
         Log.d(TAG, "finish() called");
+        super.finish();
     }
 
     @Override
@@ -41,15 +43,16 @@ public class TitleScene extends Scene {
     @Override
     public void onSwipeBottom() {
         Log.d(TAG, "onSwipeBottom() called");
-        Game.instance().changeScene(new PlayScene());
+        Game.instance().changeScene(Game.SCENE_PLAY);
     }
 
     @Override
-    public void render(long timeCurrent) {
+    public void render() {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        fps(timeCurrent);
+        computeFPS();
+        drawFPS();
     }
 
 }

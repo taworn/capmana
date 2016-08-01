@@ -10,6 +10,7 @@ import android.view.View;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import diy.capmana.scenes.PlayScene;
 import diy.capmana.scenes.Scene;
 import diy.capmana.scenes.TitleScene;
 
@@ -18,7 +19,9 @@ import diy.capmana.scenes.TitleScene;
  */
 public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
-    private static final String TAG = Game.class.getSimpleName();
+    public static final int SCENE_DEFAULT = 0;
+    public static final int SCENE_TITLE = 1;
+    public static final int SCENE_PLAY = 2;
 
     public static Game instance() {
         return singleton;
@@ -26,11 +29,13 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
     private static Game singleton = null;
 
+    private static final String TAG = Game.class.getSimpleName();
+
     private GestureDetector detector;
 
-    private int mvpMatrixHandle;
     private int positionHandle;
     private int colorHandle;
+    private int mvpMatrixHandle;
 
     private Scene scene;
 
@@ -107,10 +112,6 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         return handle;
     }
 
-    public int getMVPMatrixHandle() {
-        return mvpMatrixHandle;
-    }
-
     public int getPositionHandle() {
         return positionHandle;
     }
@@ -119,18 +120,29 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         return colorHandle;
     }
 
-    public Scene currentScene() {
-        return scene;
+    public int getMVPMatrixHandle() {
+        return mvpMatrixHandle;
     }
 
-    public void changeScene(Scene newScene) {
+    public void changeScene(int sceneId) {
         scene.finish();
-        scene = newScene;
+        switch (sceneId) {
+            case SCENE_TITLE:
+                scene = new TitleScene();
+                break;
+            case SCENE_PLAY:
+                scene = new PlayScene();
+                break;
+            case SCENE_DEFAULT:
+            default:
+                scene = new Scene();
+                break;
+        }
     }
 
     @Override
     public void onDrawFrame(GL10 unused) {
-        scene.render(System.currentTimeMillis());
+        scene.render();
     }
 
     public void onSwipeTop() {
