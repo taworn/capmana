@@ -52,7 +52,6 @@ public class TitleScene extends Scene {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         computeFPS();
-        drawFPS();
     }
 
 }

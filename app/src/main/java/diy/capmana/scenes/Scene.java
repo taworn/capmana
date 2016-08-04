@@ -4,16 +4,15 @@ import android.opengl.GLES20;
 import android.util.Log;
 
 import diy.capmana.Game;
+import diy.capmana.shaders.NormalShader;
 
 public class Scene {
 
     private static final String TAG = Scene.class.getSimpleName();
 
-    private int positionHandle;
-    private int colorHandle;
-    private int mvpMatrixHandle;
+    private NormalShader normalShader;
+    private int fps;
     private int frameCount;
-    private long fps;
     private long timeStart;
 
     public Scene() {
@@ -24,11 +23,10 @@ public class Scene {
         Log.d(TAG, "init() called");
 
         Game game = Game.instance();
-        positionHandle = game.getPositionHandle();
-        colorHandle = game.getColorHandle();
-        mvpMatrixHandle = game.getMVPMatrixHandle();
-        frameCount = 0;
+        normalShader = game.getNormalShader();
+
         fps = 0;
+        frameCount = 0;
         timeStart = System.currentTimeMillis();
     }
 
@@ -36,16 +34,8 @@ public class Scene {
         Log.d(TAG, "finish() called");
     }
 
-    protected int getPositionHandle() {
-        return positionHandle;
-    }
-
-    protected int getColorHandle() {
-        return colorHandle;
-    }
-
-    protected int getMVPMatrixHandle() {
-        return mvpMatrixHandle;
+    protected NormalShader getNormalShader() {
+        return normalShader;
     }
 
     protected long getFPS() {
@@ -57,14 +47,11 @@ public class Scene {
         long timeCurrent = System.currentTimeMillis();
         long timeUsage = timeCurrent - timeStart;
         if (timeUsage > 1000) {
-            fps = frameCount * 1000 / timeUsage;
+            fps = (int) (frameCount * 1000 / timeUsage);
             timeStart = timeCurrent;
             frameCount = 0;
             Log.d(TAG, "FPS: " + fps);
         }
-    }
-
-    protected void drawFPS() {
     }
 
     public void onSwipeTop() {
@@ -88,7 +75,6 @@ public class Scene {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         computeFPS();
-        drawFPS();
     }
 
 }
