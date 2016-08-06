@@ -5,6 +5,9 @@ import android.util.Log;
 
 import diy.capmana.Game;
 
+/**
+ * Title game scene.
+ */
 public class TitleScene extends Scene {
 
     private static final String TAG = TitleScene.class.getSimpleName();

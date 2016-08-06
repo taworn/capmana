@@ -16,7 +16,7 @@ import diy.capmana.scenes.TitleScene;
 import diy.capmana.shaders.NormalShader;
 
 /**
- * A game class.
+ * A simple game engine class.
  */
 public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
@@ -38,6 +38,9 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
     private Scene scene;
 
+    /**
+     * Initializes the game engine.
+     */
     public Game(Context context) {
         assert singleton == null;
         singleton = this;
@@ -64,6 +67,11 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         return normalShader;
     }
 
+    /**
+     * Changes the new scene.
+     *
+     * @param sceneId A scene identifier, look at SCENE_*.
+     */
     public void changeScene(int sceneId) {
         scene.finish();
         switch (sceneId) {
@@ -80,23 +88,38 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         }
     }
 
+    /**
+     * Called every render frame.
+     */
     @Override
     public void onDrawFrame(GL10 unused) {
         scene.render();
     }
 
+    /**
+     * Called when user swipe to top.
+     */
     public void onSwipeTop() {
         scene.onSwipeTop();
     }
 
+    /**
+     * Called when user swipe to left.
+     */
     public void onSwipeLeft() {
         scene.onSwipeLeft();
     }
 
+    /**
+     * Called when user swipe to right.
+     */
     public void onSwipeRight() {
         scene.onSwipeRight();
     }
 
+    /**
+     * Called when user swipe to bottom.
+     */
     public void onSwipeBottom() {
         scene.onSwipeBottom();
     }

@@ -6,6 +6,9 @@ import android.util.Log;
 import diy.capmana.Game;
 import diy.capmana.shaders.NormalShader;
 
+/**
+ * A single game scene.
+ */
 public class Scene {
 
     private static final String TAG = Scene.class.getSimpleName();
@@ -15,10 +18,16 @@ public class Scene {
     private int frameCount;
     private long timeStart;
 
+    /**
+     * Constructs a game scene.
+     */
     public Scene() {
         init();
     }
 
+    /**
+     * Initializes a game scene.
+     */
     public void init() {
         Log.d(TAG, "init() called");
 
@@ -30,6 +39,9 @@ public class Scene {
         timeStart = System.currentTimeMillis();
     }
 
+    /**
+     * Uninitializes a game scene.
+     */
     public void finish() {
         Log.d(TAG, "finish() called");
     }
@@ -42,6 +54,9 @@ public class Scene {
         return fps;
     }
 
+    /**
+     * Computes current frames per second.
+     */
     protected void computeFPS() {
         frameCount++;
         long timeCurrent = System.currentTimeMillis();
@@ -54,22 +69,37 @@ public class Scene {
         }
     }
 
+    /**
+     * Called when user swipe to top.
+     */
     public void onSwipeTop() {
         Log.d(TAG, "onSwipeTop() called");
     }
 
+    /**
+     * Called when user swipe to left.
+     */
     public void onSwipeLeft() {
         Log.d(TAG, "onSwipeLeft() called");
     }
 
+    /**
+     * Called when user swipe to right.
+     */
     public void onSwipeRight() {
         Log.d(TAG, "onSwipeRight() called");
     }
 
+    /**
+     * Called when user swipe to bottom.
+     */
     public void onSwipeBottom() {
         Log.d(TAG, "onSwipeBottom() called");
     }
 
+    /**
+     * Called every render frame.
+     */
     public void render() {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

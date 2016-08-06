@@ -11,6 +11,9 @@ import java.nio.FloatBuffer;
 
 import diy.capmana.shaders.NormalShader;
 
+/**
+ * Playing game scene.
+ */
 public class PlayScene extends Scene {
 
     private static final String TAG = PlayScene.class.getSimpleName();
