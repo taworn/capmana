@@ -4,7 +4,6 @@ import android.opengl.GLES20;
 import android.util.Log;
 
 import diy.capmana.Game;
-import diy.capmana.shaders.NormalShader;
 
 /**
  * A single game scene.
@@ -13,7 +12,8 @@ public class Scene {
 
     private static final String TAG = Scene.class.getSimpleName();
 
-    private NormalShader normalShader;
+    private int nextSceneId;
+
     private int fps;
     private int frameCount;
     private long timeStart;
@@ -22,17 +22,8 @@ public class Scene {
      * Constructs a game scene.
      */
     public Scene() {
-        init();
-    }
-
-    /**
-     * Initializes a game scene.
-     */
-    public void init() {
-        Log.d(TAG, "init() called");
-
-        Game game = Game.instance();
-        normalShader = game.getNormalShader();
+        Log.d(TAG, "Scene created");
+        nextSceneId = -1;
 
         fps = 0;
         frameCount = 0;
@@ -40,16 +31,24 @@ public class Scene {
     }
 
     /**
-     * Uninitializes a game scene.
+     * Changes the new scene.
+     *
+     * @param sceneId A scene identifier, look at SCENE_*.
      */
-    public void finish() {
-        Log.d(TAG, "finish() called");
+    public void changeScene(int sceneId) {
+        nextSceneId = sceneId;
     }
 
-    protected NormalShader getNormalShader() {
-        return normalShader;
+    /**
+     * Releases game resources in current scene.
+     */
+    public void release() {
+        Log.d(TAG, "release() called");
     }
 
+    /**
+     * Gets current frames per second.
+     */
     protected long getFPS() {
         return fps;
     }
@@ -101,6 +100,16 @@ public class Scene {
      * Called every render frame.
      */
     public void render() {
+        if (nextSceneId < 0)
+            draw();
+        else
+            Game.instance().changeScene(nextSceneId);
+    }
+
+    /**
+     * Called every render frame.  This function should be implement in children classes.
+     */
+    public void draw() {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 

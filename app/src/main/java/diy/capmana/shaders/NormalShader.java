@@ -1,5 +1,7 @@
 package diy.capmana.shaders;
 
+import android.opengl.GLES20;
+
 public class NormalShader extends Shader {
 
     private int position = -1;
@@ -28,17 +30,19 @@ public class NormalShader extends Shader {
                 + "  v_Color = a_Color;       \n"  // Pass the color through to the fragment Shader.  It will be interpolated across the triangle.
                 + "  gl_Position = u_MVPMatrix\n"  // gl_Position is a special variable used to store the final position.
                 + "              * a_Position;\n"  // Multiply the vertex by the matrix to get the final point in normalized screen coordinates.
+                + "  //gl_Position = a_Position;\n"
                 + "}                          \n";
         final String fragmentSourceCode = ""
                 + "precision mediump float; \n"  // Set the default precision to medium.  We don't need as high of a precision in the fragment Shader.
                 + "varying vec4 v_Color;    \n"  // This is the color from the vertex Shader interpolated across the triangle per fragment.
                 + "void main() {            \n"  //
                 + "  gl_FragColor = v_Color;\n"  // Pass the color directly through the pipeline.
+                + "  //gl_FragColor = vec4(1.0, 1.0, 0, 1.0);\n"  // Pass the color directly through the pipeline.
                 + "}                        \n";
         if (init(vertexSourceCode, fragmentSourceCode)) {
-            position = getAttrib("a_Position");
-            color = getAttrib("a_Color");
-            mvpMatrix = getUniform("u_MVPMatrix");
+            position = GLES20.glGetAttribLocation(getProgram(), "a_Position");
+            color = GLES20.glGetAttribLocation(getProgram(), "a_Color");
+            mvpMatrix = GLES20.glGetUniformLocation(getProgram(), "u_MVPMatrix");
         }
     }
 

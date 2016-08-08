@@ -56,19 +56,10 @@ public class Shader {
      * @param sourceCode A shader source code.
      */
     protected int loadShader(int shaderType, final String sourceCode) {
-        int result = GLES20.GL_FALSE;
         int id = GLES20.glCreateShader(shaderType);
         GLES20.glShaderSource(id, sourceCode);
         GLES20.glCompileShader(id);
         return id;
-    }
-
-    protected int getAttrib(final String name) {
-        return GLES20.glGetAttribLocation(program, name);
-    }
-
-    protected int getUniform(final String name) {
-        return GLES20.glGetUniformLocation(program, name);
     }
 
 }

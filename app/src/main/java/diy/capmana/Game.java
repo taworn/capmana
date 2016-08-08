@@ -14,6 +14,7 @@ import diy.capmana.scenes.PlayScene;
 import diy.capmana.scenes.Scene;
 import diy.capmana.scenes.TitleScene;
 import diy.capmana.shaders.NormalShader;
+import diy.capmana.shaders.TextureShader;
 
 /**
  * A simple game engine class.
@@ -32,9 +33,14 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
     private static final String TAG = Game.class.getSimpleName();
 
+    private Context context;
+
     private GestureDetector detector;
 
     private NormalShader normalShader;
+    private TextureShader textureShader;
+    private int screenWidth;
+    private int screenHeight;
 
     private Scene scene;
 
@@ -44,8 +50,9 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     public Game(Context context) {
         assert singleton == null;
         singleton = this;
+        this.context = context;
         detector = new GestureDetector(context, new GestureListener());
-        scene = new TitleScene();
+        scene = null;
     }
 
     @Override
@@ -56,24 +63,45 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
         normalShader = new NormalShader();
+        textureShader = new TextureShader();
     }
 
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+        screenWidth = width;
+        screenHeight = height;
+        changeScene(SCENE_TITLE);
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     public NormalShader getNormalShader() {
         return normalShader;
     }
 
+    public TextureShader getTextureShader() {
+        return textureShader;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+
     /**
-     * Changes the new scene.
+     * Changes the new scene.  This function must be called in render() only due to OpenGL ES thread.
      *
      * @param sceneId A scene identifier, look at SCENE_*.
      */
     public void changeScene(int sceneId) {
-        scene.finish();
+        if (scene != null)
+            scene.release();
         switch (sceneId) {
             case SCENE_TITLE:
                 scene = new TitleScene();
