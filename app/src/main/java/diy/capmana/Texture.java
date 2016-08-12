@@ -17,6 +17,27 @@ import diy.capmana.shaders.TextureShader;
  */
 public class Texture {
 
+    private static final float[] verticesData = {
+            // positions      // texture coords
+            1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+    };
+    /*
+    private static final float[] verticesData = {
+            // positions      // texture coords
+            1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+    };
+    */
+
     private FloatBuffer verticesBuffer;
     private int[] textureHandle = new int[1];
 
@@ -24,26 +45,6 @@ public class Texture {
      * Constructs a texture.
      */
     public Texture() {
-        /*
-        final float[] verticesData = {
-                // positions      // texture coords
-                1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-                1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-                -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-                1.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-                -1.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-                -1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        };
-        */
-        final float[] verticesData = {
-                // positions      // texture coords
-                1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-                -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-                -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-                -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-        };
         verticesBuffer = ByteBuffer.allocateDirect(verticesData.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
         verticesBuffer.put(verticesData).position(0);
         textureHandle[0] = 0;
@@ -78,7 +79,6 @@ public class Texture {
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
 
         bitmap.recycle();
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
     /**
@@ -97,20 +97,19 @@ public class Texture {
 
         // passing positions
         verticesBuffer.position(0);
-        //GLES20.glVertexAttribPointer(shader.getPosition(), 3, GLES20.GL_FLOAT, false, 5 * 4, verticesBuffer);
-        GLES20.glVertexAttribPointer(shader.getPosition(), 3, GLES20.GL_FLOAT, false, 7 * 4, verticesBuffer);
+        GLES20.glVertexAttribPointer(shader.getPosition(), 3, GLES20.GL_FLOAT, false, 5 * 4, verticesBuffer);
+        //GLES20.glVertexAttribPointer(shader.getPosition(), 3, GLES20.GL_FLOAT, false, 7 * 4, verticesBuffer);
         GLES20.glEnableVertexAttribArray(shader.getPosition());
 
         // passing texture coordinates
         verticesBuffer.position(3);
-        //GLES20.glVertexAttribPointer(shader.getCoord(), 2, GLES20.GL_FLOAT, false, 5 * 4, verticesBuffer);
-        GLES20.glVertexAttribPointer(shader.getCoord(), 4, GLES20.GL_FLOAT, false, 7 * 4, verticesBuffer);
+        GLES20.glVertexAttribPointer(shader.getCoord(), 2, GLES20.GL_FLOAT, false, 5 * 4, verticesBuffer);
+        //GLES20.glVertexAttribPointer(shader.getCoord(), 4, GLES20.GL_FLOAT, false, 7 * 4, verticesBuffer);
         GLES20.glEnableVertexAttribArray(shader.getCoord());
 
         // drawing
         GLES20.glUniformMatrix4fv(shader.getMVPMatrix(), 1, false, mvpMatrix, 0);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
 }
