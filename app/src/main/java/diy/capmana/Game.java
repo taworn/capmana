@@ -3,6 +3,7 @@ package diy.capmana;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import diy.capmana.scenes.PlayScene;
 import diy.capmana.scenes.Scene;
 import diy.capmana.scenes.TitleScene;
 import diy.capmana.shaders.NormalShader;
+import diy.capmana.shaders.TextShader;
 import diy.capmana.shaders.TextureShader;
 
 /**
@@ -38,7 +40,11 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     private GestureDetector detector;
 
     private NormalShader normalShader;
+    private TextShader textShader;
     private TextureShader textureShader;
+    private Font smallFont;
+    private Font mediumFont;
+    private Font largeFont;
     private int screenWidth;
     private int screenHeight;
 
@@ -62,12 +68,18 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+        Log.d(TAG, "onSurfaceCreated()");
         normalShader = new NormalShader();
+        textShader = new TextShader();
         textureShader = new TextureShader();
+        smallFont = new Font(context, 24, 0xFFFFFFFF);
+        mediumFont = new Font(context, 32, 0xFFFFFFFF);
+        largeFont = new Font(context, 64, 0xFFFFFFFF);
     }
 
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
+        Log.d(TAG, "onSurfaceChanged()");
         GLES20.glViewport(0, 0, width, height);
         screenWidth = width;
         screenHeight = height;
@@ -82,8 +94,24 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         return normalShader;
     }
 
+    public TextShader getTextShader() {
+        return textShader;
+    }
+
     public TextureShader getTextureShader() {
         return textureShader;
+    }
+
+    public Font getSmallFont() {
+        return smallFont;
+    }
+
+    public Font getMediumFont() {
+        return mediumFont;
+    }
+
+    public Font getLargeFont() {
+        return largeFont;
     }
 
     public int getScreenWidth() {
@@ -103,15 +131,15 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         if (scene != null)
             scene.release();
         switch (sceneId) {
+            default:
+            case SCENE_DEFAULT:
+                scene = new Scene();
+                break;
             case SCENE_TITLE:
                 scene = new TitleScene();
                 break;
             case SCENE_PLAY:
                 scene = new PlayScene();
-                break;
-            case SCENE_DEFAULT:
-            default:
-                scene = new Scene();
                 break;
         }
     }

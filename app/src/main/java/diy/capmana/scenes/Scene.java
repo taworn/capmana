@@ -1,8 +1,10 @@
 package diy.capmana.scenes;
 
+import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import diy.capmana.Font;
 import diy.capmana.Game;
 
 /**
@@ -66,6 +68,14 @@ public class Scene {
             frameCount = 0;
             Log.d(TAG, "FPS: " + fps);
         }
+
+        String text = Integer.toString(fps);
+        Game game = Game.instance();
+        float sx = 2.0f / game.getScreenWidth();
+        float sy = 2.0f / game.getScreenHeight();
+        Font font = game.getSmallFont();
+        PointF measure = font.measure(text + "8", sx, sy);
+        font.draw(text, 1 - measure.x, -1 + measure.y, sx, sy);
     }
 
     /**
