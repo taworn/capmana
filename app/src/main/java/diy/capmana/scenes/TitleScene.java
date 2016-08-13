@@ -1,7 +1,7 @@
 package diy.capmana.scenes;
 
 import android.graphics.PointF;
-import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -19,21 +19,20 @@ public class TitleScene extends Scene {
     private static final String TAG = TitleScene.class.getSimpleName();
 
     private Texture texture;
-    private Font font;
+    private Font titleFont;
 
     public TitleScene() {
         super();
         Log.d(TAG, "TitleScene created");
         texture = new Texture();
         texture.load(Game.instance().getContext(), R.drawable.a);
-        font = new Font();
-        font.load(Game.instance().getContext(), 24, 0xffffffff);
+        titleFont = new Font(Game.instance().getContext(), 64, 0xFFFFFF80, Typeface.create((Typeface) null, Typeface.BOLD));
     }
 
     @Override
     public void release() {
         Log.d(TAG, "release() called");
-        font.release();
+        titleFont.release();
         texture.release();
         super.release();
     }
@@ -41,7 +40,7 @@ public class TitleScene extends Scene {
     @Override
     public void onSwipeTop() {
         Log.d(TAG, "onSwipeTop() called");
-        changeScene(Game.SCENE_TITLE);
+        changeScene(Game.SCENE_PLAY);
     }
 
     @Override
@@ -71,7 +70,7 @@ public class TitleScene extends Scene {
         Matrix.multiplyMM(combineViewProjectMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         Matrix.setIdentityM(scaleMatrix, 0);
-        //Matrix.scaleM(scaleMatrix, 0, 0.0f, 0.0f, 1.0f);
+        Matrix.scaleM(scaleMatrix, 0, 0.5f, 0.5f, 1.0f);
         Matrix.setIdentityM(translateMatrix, 0);
         Matrix.translateM(translateMatrix, 0, 0.0f, 0.0f, 0.0f);
         Matrix.multiplyMM(tempMatrix, 0, scaleMatrix, 0, translateMatrix, 0);
@@ -81,9 +80,14 @@ public class TitleScene extends Scene {
         Game game = Game.instance();
         float sx = 2.0f / game.getScreenWidth();
         float sy = 2.0f / game.getScreenHeight();
-        PointF measure;
-        measure = font.measure("Capman", sx, sy);
-        font.draw("Capman", 0 - (measure.x / 2), 0 - (measure.y / 2), sx, sy);
+        String title = "Capman";
+        PointF measure = titleFont.measure(title, sx, sy);
+        titleFont.draw(title, 0 - (measure.x / 2), 0.3f, sx, sy);
+
+        Font font = game.getMediumFont();
+        String menu = "Swipe up/down to Start";
+        measure = font.measure(menu, sx, sy);
+        font.draw(menu, 0 - (measure.x / 2), -0.5f, sx, sy);
 
         computeFPS();
     }

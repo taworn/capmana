@@ -6,7 +6,6 @@ public class TextShader extends Shader {
 
     private int position = -1;
     private int coord = -1;
-    private int color = -1;
     private int sampler = -1;
 
     public int getPosition() {

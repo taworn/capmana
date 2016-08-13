@@ -72,9 +72,9 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         normalShader = new NormalShader();
         textShader = new TextShader();
         textureShader = new TextureShader();
-        smallFont = new Font(context, 24, 0xFFFFFFFF);
-        mediumFont = new Font(context, 32, 0xFFFFFFFF);
-        largeFont = new Font(context, 64, 0xFFFFFFFF);
+        smallFont = new Font(context, 16, 0xFFFFFFFF, null);
+        mediumFont = new Font(context, 24, 0xFFFFFFFF, null);
+        largeFont = new Font(context, 32, 0xFFFFFFFF, null);
     }
 
     @Override

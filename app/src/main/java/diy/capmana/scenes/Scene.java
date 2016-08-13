@@ -74,7 +74,7 @@ public class Scene {
         float sx = 2.0f / game.getScreenWidth();
         float sy = 2.0f / game.getScreenHeight();
         Font font = game.getSmallFont();
-        PointF measure = font.measure(text + "8", sx, sy);
+        PointF measure = font.measure(text, sx, sy);
         font.draw(text, 1 - measure.x, -1 + measure.y, sx, sy);
     }
 
