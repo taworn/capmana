@@ -6,10 +6,10 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import diy.capmana.Sprite;
 import diy.capmana.Font;
 import diy.capmana.Game;
 import diy.capmana.R;
-import diy.capmana.Texture;
 
 /**
  * Title game scene.
@@ -18,22 +18,23 @@ public class TitleScene extends Scene {
 
     private static final String TAG = TitleScene.class.getSimpleName();
 
-    private Texture texture;
     private Font titleFont;
+    private Sprite sprite;
+    private float modelX;
 
     public TitleScene() {
         super();
         Log.d(TAG, "TitleScene created");
-        texture = new Texture();
-        texture.load(Game.instance().getContext(), R.drawable.a);
         titleFont = new Font(Game.instance().getContext(), 64, 0xFFFFFF80, Typeface.create((Typeface) null, Typeface.BOLD));
+        sprite = new Sprite(Game.instance().getContext(), R.drawable.a, 3, 2);
+        modelX = 0.0f;
     }
 
     @Override
     public void release() {
         Log.d(TAG, "release() called");
+        sprite.release();
         titleFont.release();
-        texture.release();
         super.release();
     }
 
@@ -72,10 +73,13 @@ public class TitleScene extends Scene {
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.scaleM(scaleMatrix, 0, 0.5f, 0.5f, 1.0f);
         Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, 0.0f, 0.0f, 0.0f);
+        Matrix.translateM(translateMatrix, 0, modelX, 0.0f, 0.0f);
+        modelX -= 0.05f;
+        if (modelX < -4.0f)
+            modelX = 4.0f;
         Matrix.multiplyMM(tempMatrix, 0, scaleMatrix, 0, translateMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        texture.draw(mvpMatrix);
+        sprite.draw(mvpMatrix, 1);
 
         Game game = Game.instance();
         float sx = 2.0f / game.getScreenWidth();

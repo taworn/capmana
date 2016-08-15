@@ -9,11 +9,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
-import android.os.Environment;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -195,35 +191,6 @@ public class Font {
     public void release() {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glDeleteTextures(1, textureHandle, 0);
-    }
-
-    private boolean onlyOne = false;
-
-    private void save(Bitmap bmp) {
-        if (onlyOne)
-            return;
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File file = new File(path + "/capman-temp.png");
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-            // PNG is a lossless format, the compression factor (100) is ignored
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        onlyOne = true;
     }
 
 }
