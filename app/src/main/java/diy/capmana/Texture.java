@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.support.annotation.NonNull;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -45,7 +46,7 @@ public class Texture {
      * @param context    A context.
      * @param resourceId A resource identifier.
      */
-    public void load(Context context, int resourceId) {
+    public void load(@NonNull Context context, int resourceId) {
         GLES20.glGenTextures(1, textureHandle, 0);
 
         // loads image
@@ -65,7 +66,7 @@ public class Texture {
     /**
      * Draws texture.
      */
-    public void draw(float[] mvpMatrix) {
+    public void draw(@NonNull float[] mvpMatrix) {
         TextureShader shader = Game.instance().getTextureShader();
         shader.useProgram();
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);

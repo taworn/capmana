@@ -2,6 +2,8 @@ package diy.capmana.scenes;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import diy.capmana.Animation;
@@ -25,9 +27,19 @@ public class PlayScene extends Scene {
     private float modelDx = 0.0f;
     private float modelDy = 0.0f;
 
-    public PlayScene() {
-        super();
+    public PlayScene(@Nullable Bundle bundle) {
+        super(bundle);
         Log.d(TAG, "PlayScene created");
+        acquire(bundle);
+        if (bundle != null) {
+            onRestoreInstanceState(bundle);
+        }
+    }
+
+    @Override
+    public void acquire(@Nullable Bundle bundle) {
+        super.acquire(bundle);
+        Log.d(TAG, "acquire() called");
         sprite = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
 
         final int TIME = 300;
@@ -47,6 +59,10 @@ public class PlayScene extends Scene {
             aniDivoes[i].add(3, j + 6, j + 8, TIME);
             aniDivoes[i].use(0);
         }
+
+        if (bundle != null) {
+            onRestoreInstanceState(bundle);
+        }
     }
 
     @Override
@@ -54,6 +70,44 @@ public class PlayScene extends Scene {
         Log.d(TAG, "release() called");
         sprite.release();
         super.release();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause()");
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume()");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState()");
+        if (savedInstanceState != null) {
+            savedInstanceState.putFloat("modelX", modelX);
+            savedInstanceState.putFloat("modelY", modelY);
+            savedInstanceState.putFloat("modelDx", modelDx);
+            savedInstanceState.putFloat("modelDy", modelDy);
+            savedInstanceState.putParcelable("aniHero", aniHero);
+        }
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState()");
+        if (savedInstanceState != null) {
+            modelX = savedInstanceState.getFloat("modelX");
+            modelY = savedInstanceState.getFloat("modelY");
+            modelDx = savedInstanceState.getFloat("modelDx");
+            modelDy = savedInstanceState.getFloat("modelDy");
+            aniHero = savedInstanceState.getParcelable("aniHero");
+        }
     }
 
     @Override

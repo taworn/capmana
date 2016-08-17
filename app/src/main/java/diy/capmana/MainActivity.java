@@ -11,6 +11,7 @@ import android.view.WindowManager;
 public class MainActivity extends Activity {
 
     private GLSurfaceView surfaceView;
+    private Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,7 @@ public class MainActivity extends Activity {
 
         surfaceView = (GLSurfaceView) findViewById(R.id.surface_view);
         if (surfaceView != null) {
-            Game game = new Game(this);
+            game = new Game(this);
             surfaceView.setEGLContextClientVersion(2);
             surfaceView.setOnTouchListener(game);
             surfaceView.setRenderer(game);
@@ -39,14 +40,28 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
-        super.onPause();
+        game.onPause();
         surfaceView.onPause();
+        super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         surfaceView.onResume();
+        game.onResume();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        game.onSaveInstanceState(savedInstanceState);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        game.onRestoreInstanceState(savedInstanceState);
     }
 
 }

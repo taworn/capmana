@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.support.annotation.NonNull;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -28,14 +29,14 @@ public class Sprite {
     /**
      * Constructs a sprite.
      */
-    public Sprite(Context context, int resourceId, int sliceHorz, int sliceVert) {
+    public Sprite(@NonNull Context context, int resourceId, int sliceHorz, int sliceVert) {
         load(context, resourceId, sliceHorz, sliceVert);
     }
 
     /**
      * Loads image.
      */
-    public void load(Context context, int resourceId, int sliceHorz, int sliceVert) {
+    public void load(@NonNull Context context, int resourceId, int sliceHorz, int sliceVert) {
         GLES20.glGenTextures(1, handle, 0);
 
         // loads image
@@ -68,7 +69,7 @@ public class Sprite {
     /**
      * Draws sprite.
      */
-    public void draw(float[] mvpMatrix, int imageIndex) {
+    public void draw(@NonNull float[] mvpMatrix, int imageIndex) {
         TextureShader shader = Game.instance().getTextureShader();
         shader.useProgram();
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);

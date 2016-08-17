@@ -9,6 +9,8 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -54,7 +56,7 @@ public class Font {
     /**
      * Constructs a font.
      */
-    public Font(Context context, int fontSize, int color, Typeface typeface) {
+    public Font(@NonNull Context context, int fontSize, int color, @Nullable Typeface typeface) {
         widthForOne = 0;
         heightForAll = 0;
         textureHandle[0] = 0;
@@ -64,7 +66,7 @@ public class Font {
     /**
      * Loads font into cache.
      */
-    private void load(Context context, int fontSize, int color, Typeface typeface) {
+    private void load(@NonNull Context context, int fontSize, int color, @Nullable Typeface typeface) {
         GLES20.glGenTextures(1, textureHandle, 0);
 
         // prepares for paint
@@ -119,7 +121,7 @@ public class Font {
     /**
      * Measures size of text before draw.
      */
-    public PointF measure(String text, float sx, float sy) {
+    public PointF measure(@NonNull String text, float sx, float sy) {
         float w = 0;
         int length = text.length();
         for (int i = 0; i < length; i++) {
@@ -133,7 +135,7 @@ public class Font {
     /**
      * Draws text.
      */
-    public void draw(String text, float x, float y, float sx, float sy) {
+    public void draw(@NonNull String text, float x, float y, float sx, float sy) {
         TextShader shader = Game.instance().getTextShader();
         shader.useProgram();
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);

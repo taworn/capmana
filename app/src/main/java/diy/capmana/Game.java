@@ -3,6 +3,8 @@ package diy.capmana;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -37,6 +39,8 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
     private Context context;
     private GestureDetector detector;
+    private Bundle bundle;
+    private int currentSceneId;
 
     private NormalShader normalShader;
     private TextShader textShader;
@@ -52,13 +56,44 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     /**
      * Initializes the game engine.
      */
-    public Game(Context context) {
+    public Game(@NonNull Context context) {
         assert singleton == null;
         singleton = this;
 
         this.context = context;
         detector = new GestureDetector(context, new GestureListener());
+        bundle = null;
+        currentSceneId = SCENE_TITLE;
         scene = null;
+    }
+
+    public void onPause() {
+        Log.d(TAG, "onPause()");
+        if (scene != null)
+            scene.onPause();
+    }
+
+    public void onResume() {
+        Log.d(TAG, "onResume()");
+        if (scene != null)
+            scene.onResume();
+    }
+
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState()");
+        bundle = new Bundle();
+        savedInstanceState.putBundle("bundle", bundle);
+        savedInstanceState.putInt("currentSceneId", currentSceneId);
+        if (scene != null)
+            scene.onSaveInstanceState(bundle);
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState()");
+        bundle = savedInstanceState.getBundle("bundle");
+        currentSceneId = savedInstanceState.getInt("currentSceneId");
+        if (scene != null)
+            scene.onRestoreInstanceState(bundle);
     }
 
     @Override
@@ -68,13 +103,17 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-        Log.d(TAG, "onSurfaceCreated()");
+        Log.d(TAG, "onSurfaceCreated(), scene = " + scene);
         normalShader = new NormalShader();
         textShader = new TextShader();
         textureShader = new TextureShader();
         smallFont = new Font(context, 16, 0xFFFFFFFF, null);
         mediumFont = new Font(context, 24, 0xFFFFFFFF, null);
         largeFont = new Font(context, 32, 0xFFFFFFFF, null);
+        if (scene != null) {
+            scene.release();
+            scene.acquire(bundle);
+        }
     }
 
     @Override
@@ -83,7 +122,42 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
         screenWidth = width;
         screenHeight = height;
-        changeScene(SCENE_TITLE);
+    }
+
+    /**
+     * Called every render frame.
+     */
+    @Override
+    public void onDrawFrame(GL10 unused) {
+        if (scene != null)
+            scene.render();
+        else
+            changeScene(currentSceneId);
+    }
+
+    /**
+     * Changes the new scene.  This function must be called in render() only due to OpenGL ES thread.
+     *
+     * @param sceneId A scene identifier, look at SCENE_*.
+     */
+    public void changeScene(int sceneId) {
+        Log.d(TAG, "changing to " + sceneId + ", bundle = " + bundle);
+        if (scene != null)
+            scene.release();
+        switch (sceneId) {
+            default:
+            case SCENE_DEFAULT:
+                scene = new Scene(bundle);
+                break;
+            case SCENE_TITLE:
+                scene = new TitleScene(bundle);
+                break;
+            case SCENE_PLAY:
+                scene = new PlayScene(bundle);
+                break;
+        }
+        bundle = null;
+        currentSceneId = sceneId;
     }
 
     public Context getContext() {
@@ -123,61 +197,35 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     }
 
     /**
-     * Changes the new scene.  This function must be called in render() only due to OpenGL ES thread.
-     *
-     * @param sceneId A scene identifier, look at SCENE_*.
-     */
-    public void changeScene(int sceneId) {
-        if (scene != null)
-            scene.release();
-        switch (sceneId) {
-            default:
-            case SCENE_DEFAULT:
-                scene = new Scene();
-                break;
-            case SCENE_TITLE:
-                scene = new TitleScene();
-                break;
-            case SCENE_PLAY:
-                scene = new PlayScene();
-                break;
-        }
-    }
-
-    /**
-     * Called every render frame.
-     */
-    @Override
-    public void onDrawFrame(GL10 unused) {
-        scene.render();
-    }
-
-    /**
      * Called when user swipe to top.
      */
     public void onSwipeTop() {
-        scene.onSwipeTop();
+        if (scene != null)
+            scene.onSwipeTop();
     }
 
     /**
      * Called when user swipe to left.
      */
     public void onSwipeLeft() {
-        scene.onSwipeLeft();
+        if (scene != null)
+            scene.onSwipeLeft();
     }
 
     /**
      * Called when user swipe to right.
      */
     public void onSwipeRight() {
-        scene.onSwipeRight();
+        if (scene != null)
+            scene.onSwipeRight();
     }
 
     /**
      * Called when user swipe to bottom.
      */
     public void onSwipeBottom() {
-        scene.onSwipeBottom();
+        if (scene != null)
+            scene.onSwipeBottom();
     }
 
     private final class GestureListener extends GestureDetector.SimpleOnGestureListener {

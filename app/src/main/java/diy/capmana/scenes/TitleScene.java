@@ -4,6 +4,8 @@ import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import diy.capmana.Animation;
@@ -25,9 +27,20 @@ public class TitleScene extends Scene {
     private Animation aniDivo;
     private float modelX;
 
-    public TitleScene() {
-        super();
+    public TitleScene(@Nullable Bundle bundle) {
+        super(bundle);
         Log.d(TAG, "TitleScene created");
+        acquire(bundle);
+        modelX = 0.0f;
+        if (bundle != null) {
+            onRestoreInstanceState(bundle);
+        }
+    }
+
+    @Override
+    public void acquire(@Nullable Bundle bundle) {
+        super.acquire(bundle);
+        Log.d(TAG, "acquire() called");
         titleFont = new Font(Game.instance().getContext(), 64, 0xFFFFFF80, Typeface.create((Typeface) null, Typeface.BOLD));
         sprite = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
 
@@ -45,8 +58,6 @@ public class TitleScene extends Scene {
         aniDivo.add(2, 12, 14, TIME);
         aniDivo.add(3, 14, 16, TIME);
         aniDivo.use(0);
-
-        modelX = 0.0f;
     }
 
     @Override
@@ -55,6 +66,40 @@ public class TitleScene extends Scene {
         sprite.release();
         titleFont.release();
         super.release();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause()");
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume()");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState()");
+        if (savedInstanceState != null) {
+            savedInstanceState.putFloat("modelX", modelX);
+            savedInstanceState.putParcelable("aniHero", aniHero);
+        }
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState()");
+        if (savedInstanceState != null) {
+            modelX = savedInstanceState.getFloat("modelX");
+            aniHero = savedInstanceState.getParcelable("aniHero");
+            if (aniHero != null)
+                aniHero.setSprite(sprite);
+        }
     }
 
     @Override

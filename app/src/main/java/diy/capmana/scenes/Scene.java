@@ -2,6 +2,8 @@ package diy.capmana.scenes;
 
 import android.graphics.PointF;
 import android.opengl.GLES20;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import diy.capmana.Font;
@@ -15,7 +17,6 @@ public class Scene {
     private static final String TAG = Scene.class.getSimpleName();
 
     private int nextSceneId;
-
     private int fps;
     private int frameCount;
     private long timeStart;
@@ -23,22 +24,19 @@ public class Scene {
     /**
      * Constructs a game scene.
      */
-    public Scene() {
+    public Scene(@Nullable Bundle bundle) {
         Log.d(TAG, "Scene created");
         nextSceneId = -1;
-
         fps = 0;
         frameCount = 0;
         timeStart = System.currentTimeMillis();
     }
 
     /**
-     * Changes the new scene.
-     *
-     * @param sceneId A scene identifier, look at SCENE_*.
+     * Acquires game resources in current scene.
      */
-    public void changeScene(int sceneId) {
-        nextSceneId = sceneId;
+    public void acquire(@Nullable Bundle bundle) {
+        Log.d(TAG, "acquire() called");
     }
 
     /**
@@ -49,33 +47,33 @@ public class Scene {
     }
 
     /**
-     * Gets current frames per second.
+     * Called when activity pause.
      */
-    protected long getFPS() {
-        return fps;
+    public void onPause() {
+        Log.d(TAG, "onPause()");
     }
 
     /**
-     * Computes current frames per second.
+     * Called when activity resume.
      */
-    protected void computeFPS() {
-        frameCount++;
-        long timeCurrent = System.currentTimeMillis();
-        long timeUsage = timeCurrent - timeStart;
-        if (timeUsage > 1000) {
-            fps = (int) (frameCount * 1000 / timeUsage);
-            timeStart = timeCurrent;
-            frameCount = 0;
-            Log.d(TAG, "FPS: " + fps);
-        }
+    public void onResume() {
+        Log.d(TAG, "onResume()");
+        frameCount = 0;
+        timeStart = System.currentTimeMillis();
+    }
 
-        String text = Integer.toString(fps);
-        Game game = Game.instance();
-        float sx = 2.0f / game.getScreenWidth();
-        float sy = 2.0f / game.getScreenHeight();
-        Font font = game.getSmallFont();
-        PointF measure = font.measure(text, sx, sy);
-        font.draw(text, 1 - measure.x, -1 + measure.y, sx, sy);
+    /**
+     * Called when activity need to save instance state.
+     */
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onSaveInstanceState()");
+    }
+
+    /**
+     * Called when activity need to restore instance state.
+     */
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "onRestoreInstanceState()");
     }
 
     /**
@@ -124,6 +122,45 @@ public class Scene {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         computeFPS();
+    }
+
+    /**
+     * Changes the new scene.
+     *
+     * @param sceneId A scene identifier, look at SCENE_*.
+     */
+    public void changeScene(int sceneId) {
+        nextSceneId = sceneId;
+    }
+
+    /**
+     * Gets current frames per second.
+     */
+    protected long getFPS() {
+        return fps;
+    }
+
+    /**
+     * Computes current frames per second.
+     */
+    protected void computeFPS() {
+        frameCount++;
+        long timeCurrent = System.currentTimeMillis();
+        long timeUsage = timeCurrent - timeStart;
+        if (timeUsage > 1000) {
+            fps = (int) (frameCount * 1000 / timeUsage);
+            timeStart = timeCurrent;
+            frameCount = 0;
+            Log.d(TAG, "FPS: " + fps);
+        }
+
+        String text = Integer.toString(fps);
+        Game game = Game.instance();
+        float sx = 2.0f / game.getScreenWidth();
+        float sy = 2.0f / game.getScreenHeight();
+        Font font = game.getSmallFont();
+        PointF measure = font.measure(text, sx, sy);
+        font.draw(text, 1 - measure.x, -1 + measure.y, sx, sy);
     }
 
 }
