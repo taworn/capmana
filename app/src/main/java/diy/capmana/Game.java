@@ -36,7 +36,6 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     private static final String TAG = Game.class.getSimpleName();
 
     private Context context;
-
     private GestureDetector detector;
 
     private NormalShader normalShader;
@@ -56,6 +55,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     public Game(Context context) {
         assert singleton == null;
         singleton = this;
+
         this.context = context;
         detector = new GestureDetector(context, new GestureListener());
         scene = null;

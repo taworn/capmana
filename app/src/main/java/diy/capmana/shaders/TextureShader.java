@@ -32,7 +32,6 @@ public class TextureShader extends Shader {
                 + "uniform mat4 uMVPMatrix;\n"
                 + "varying vec2 vTextureCoord;\n"
                 + "void main() {\n"
-                + "  //gl_Position = vec4(aVertexPosition, 1.0);\n"
                 + "  gl_Position = uMVPMatrix * vec4(aVertexPosition, 1.0);\n"
                 + "  vTextureCoord = aTextureCoord;\n"
                 + "}\n";
@@ -42,9 +41,7 @@ public class TextureShader extends Shader {
                 + "uniform sampler2D uSampler;\n"
                 + "void main() {\n"
                 + "  vec4 textureColor = texture2D(uSampler, vTextureCoord);\n"
-                + "  //vec4 textureColor = vec4(vTextureCoord.r, vTextureCoord.b, 0, 1);\n"
                 + "  gl_FragColor = vec4(textureColor.rgb, textureColor.a);\n"
-                + "  //gl_FragColor = vec4(vTextureCoord.r, 0.5, vTextureCoord.g, 1.0);\n"
                 + "}\n";
         if (init(vertexSourceCode, fragmentSourceCode)) {
             position = GLES20.glGetAttribLocation(getProgram(), "aVertexPosition");

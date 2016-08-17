@@ -8,7 +8,7 @@ import diy.capmana.Font;
 import diy.capmana.Game;
 
 /**
- * A single game scene.
+ * A base game scene.
  */
 public class Scene {
 

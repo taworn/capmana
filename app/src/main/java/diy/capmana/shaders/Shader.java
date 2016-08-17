@@ -9,6 +9,9 @@ public class Shader {
 
     private int program = 0;
 
+    /**
+     * Gets this program.
+     */
     public int getProgram() {
         return program;
     }

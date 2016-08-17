@@ -105,7 +105,6 @@ public class Font {
             vData[i] = (float) (i * heightForAll) / bitmap.getHeight();
         uData[16] = 1.0f;
         vData[6] = 1.0f;
-        //save(bitmap);
 
         // sets texture
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
@@ -118,7 +117,7 @@ public class Font {
     }
 
     /**
-     * Measures text before draw.
+     * Measures size of text before draw.
      */
     public PointF measure(String text, float sx, float sy) {
         float w = 0;
@@ -179,7 +178,6 @@ public class Font {
                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
 
                 // next characters
-                //x = xx;
                 x += advanceX[c - 32] * sx;
             }
         }

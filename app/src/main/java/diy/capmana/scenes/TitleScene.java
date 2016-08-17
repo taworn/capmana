@@ -7,10 +7,10 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import diy.capmana.Animation;
-import diy.capmana.Sprite;
 import diy.capmana.Font;
 import diy.capmana.Game;
 import diy.capmana.R;
+import diy.capmana.Sprite;
 
 /**
  * Title game scene.
