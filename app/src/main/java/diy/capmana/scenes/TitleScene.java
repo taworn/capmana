@@ -6,6 +6,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import diy.capmana.Animation;
 import diy.capmana.Sprite;
 import diy.capmana.Font;
 import diy.capmana.Game;
@@ -20,13 +21,31 @@ public class TitleScene extends Scene {
 
     private Font titleFont;
     private Sprite sprite;
+    private Animation aniHero;
+    private Animation aniDivo;
     private float modelX;
 
     public TitleScene() {
         super();
         Log.d(TAG, "TitleScene created");
         titleFont = new Font(Game.instance().getContext(), 64, 0xFFFFFF80, Typeface.create((Typeface) null, Typeface.BOLD));
-        sprite = new Sprite(Game.instance().getContext(), R.drawable.a, 3, 2);
+        sprite = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
+
+        final int TIME = 300;
+        aniHero = new Animation(sprite);
+        aniHero.add(0, 0, 2, TIME);
+        aniHero.add(1, 2, 4, TIME);
+        aniHero.add(2, 4, 6, TIME);
+        aniHero.add(3, 6, 8, TIME);
+        aniHero.use(0);
+
+        aniDivo = new Animation(sprite);
+        aniDivo.add(0, 8, 10, TIME);
+        aniDivo.add(1, 10, 12, TIME);
+        aniDivo.add(2, 12, 14, TIME);
+        aniDivo.add(3, 14, 16, TIME);
+        aniDivo.use(0);
+
         modelX = 0.0f;
     }
 
@@ -55,32 +74,6 @@ public class TitleScene extends Scene {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        float[] projectionMatrix = new float[16];
-        float[] viewMatrix = new float[16];
-        float[] combineViewProjectMatrix = new float[16];
-        float[] scaleMatrix = new float[16];
-        float[] translateMatrix = new float[16];
-        float[] mvpMatrix = new float[16];
-        float[] tempMatrix = new float[16];
-
-        Matrix.orthoM(projectionMatrix, 0, -2.0f, 2.0f, -2.0f, 2.0f, 1.0f, 25.0f);
-        Matrix.setLookAtM(viewMatrix, 0,
-                0.0f, 0.0f, 1.5f,    // eye
-                0.0f, 0.0f, -15.0f,  // at
-                0.0f, 1.0f, 0.0f);   // up
-        Matrix.multiplyMM(combineViewProjectMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-
-        Matrix.setIdentityM(scaleMatrix, 0);
-        Matrix.scaleM(scaleMatrix, 0, 0.5f, 0.5f, 1.0f);
-        Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, modelX, 0.0f, 0.0f);
-        modelX -= 0.05f;
-        if (modelX < -4.0f)
-            modelX = 4.0f;
-        Matrix.multiplyMM(tempMatrix, 0, scaleMatrix, 0, translateMatrix, 0);
-        Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        sprite.draw(mvpMatrix, 1);
-
         Game game = Game.instance();
         float sx = 2.0f / game.getScreenWidth();
         float sy = 2.0f / game.getScreenHeight();
@@ -92,6 +85,39 @@ public class TitleScene extends Scene {
         String menu = "Swipe up/down to Start";
         measure = font.measure(menu, sx, sy);
         font.draw(menu, 0 - (measure.x / 2), -0.5f, sx, sy);
+
+        float[] projectionMatrix = new float[16];
+        float[] viewMatrix = new float[16];
+        float[] combineViewProjectMatrix = new float[16];
+        float[] translateMatrix = new float[16];
+        float[] scaleMatrix = new float[16];
+        float[] mvpMatrix = new float[16];
+        float[] tempMatrix = new float[16];
+
+        Matrix.orthoM(projectionMatrix, 0, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 25.0f);
+        Matrix.setLookAtM(viewMatrix, 0,
+                0.0f, 0.0f, 1.5f,    // eye
+                0.0f, 0.0f, -15.0f,  // at
+                0.0f, 1.0f, 0.0f);   // up
+        Matrix.multiplyMM(combineViewProjectMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+
+        Matrix.setIdentityM(scaleMatrix, 0);
+        Matrix.scaleM(scaleMatrix, 0, 0.08f, 0.08f, 1.0f);
+        Matrix.setIdentityM(translateMatrix, 0);
+        Matrix.translateM(translateMatrix, 0, modelX, 0.0f, 0.0f);
+        Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+        aniHero.draw(mvpMatrix);
+
+        Matrix.setIdentityM(translateMatrix, 0);
+        Matrix.translateM(translateMatrix, 0, modelX - 0.15f, 0.0f, 0.0f);
+        Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+        aniDivo.draw(mvpMatrix);
+
+        modelX -= 0.01f;
+        if (modelX < -1.0f)
+            modelX = 1.0f;
 
         computeFPS();
     }
