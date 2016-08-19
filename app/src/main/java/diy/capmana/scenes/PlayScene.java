@@ -22,28 +22,13 @@ public class PlayScene extends Scene {
     private Animation aniHero;
     private Animation[] aniDivoes = new Animation[4];
 
-    private float modelX = 0.0f;
-    private float modelY = 0.0f;
-    private float modelDx = 0.0f;
-    private float modelDy = 0.0f;
-
     public PlayScene(@Nullable Bundle bundle) {
         super(bundle);
         Log.d(TAG, "PlayScene created");
         acquire(bundle);
-        if (bundle != null) {
-            onRestoreInstanceState(bundle);
-        }
-    }
-
-    @Override
-    public void acquire(@Nullable Bundle bundle) {
-        super.acquire(bundle);
-        Log.d(TAG, "acquire() called");
-        sprite = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
 
         final int TIME = 300;
-        aniHero = new Animation(sprite);
+        aniHero = new Animation();
         aniHero.add(0, 0, 2, TIME);
         aniHero.add(1, 2, 4, TIME);
         aniHero.add(2, 4, 6, TIME);
@@ -52,7 +37,7 @@ public class PlayScene extends Scene {
 
         for (int i = 0; i < 4; i++) {
             int j = (i + 1) * 8;
-            aniDivoes[i] = new Animation(sprite);
+            aniDivoes[i] = new Animation();
             aniDivoes[i].add(0, j, j + 2, TIME);
             aniDivoes[i].add(1, j + 2, j + 4, TIME);
             aniDivoes[i].add(2, j + 4, j + 6, TIME);
@@ -63,6 +48,13 @@ public class PlayScene extends Scene {
         if (bundle != null) {
             onRestoreInstanceState(bundle);
         }
+    }
+
+    @Override
+    public void acquire(@Nullable Bundle bundle) {
+        super.acquire(bundle);
+        Log.d(TAG, "acquire() called");
+        sprite = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
     }
 
     @Override
@@ -88,10 +80,6 @@ public class PlayScene extends Scene {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         Log.d(TAG, "onSaveInstanceState()");
         if (savedInstanceState != null) {
-            savedInstanceState.putFloat("modelX", modelX);
-            savedInstanceState.putFloat("modelY", modelY);
-            savedInstanceState.putFloat("modelDx", modelDx);
-            savedInstanceState.putFloat("modelDy", modelDy);
             savedInstanceState.putParcelable("aniHero", aniHero);
         }
         super.onSaveInstanceState(savedInstanceState);
@@ -102,10 +90,6 @@ public class PlayScene extends Scene {
         super.onRestoreInstanceState(savedInstanceState);
         Log.d(TAG, "onRestoreInstanceState()");
         if (savedInstanceState != null) {
-            modelX = savedInstanceState.getFloat("modelX");
-            modelY = savedInstanceState.getFloat("modelY");
-            modelDx = savedInstanceState.getFloat("modelDx");
-            modelDy = savedInstanceState.getFloat("modelDy");
             aniHero = savedInstanceState.getParcelable("aniHero");
         }
     }
@@ -113,33 +97,29 @@ public class PlayScene extends Scene {
     @Override
     public void onSwipeTop() {
         Log.d(TAG, "onSwipeTop() called");
+        aniHero.setVelocity(0.0f, 0.02f);
         aniHero.use(2);
-        modelDx = 0.0f;
-        modelDy = 0.02f;
     }
 
     @Override
     public void onSwipeLeft() {
         Log.d(TAG, "onSwipeLeft() called");
+        aniHero.setVelocity(-0.02f, 0.0f);
         aniHero.use(0);
-        modelDx = -0.02f;
-        modelDy = 0.0f;
     }
 
     @Override
     public void onSwipeRight() {
         Log.d(TAG, "onSwipeRight() called");
+        aniHero.setVelocity(0.02f, 0.0f);
         aniHero.use(1);
-        modelDx = 0.02f;
-        modelDy = 0.0f;
     }
 
     @Override
     public void onSwipeBottom() {
         Log.d(TAG, "onSwipeBottom() called");
+        aniHero.setVelocity(0.0f, -0.02f);
         aniHero.use(3);
-        modelDx = 0.0f;
-        modelDy = -0.02f;
     }
 
     @Override
@@ -165,42 +145,44 @@ public class PlayScene extends Scene {
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.scaleM(scaleMatrix, 0, 0.05f, 0.05f, 1.0f);
         Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, modelX, modelY, 0);
-        if (modelDx > 0.0f && modelX < 0.95f)
-            modelX += modelDx;
-        else if (modelDx < 0.0f && modelX > -0.95f)
-            modelX += modelDx;
-        if (modelDy > 0.0f && modelY < 0.95f)
-            modelY += modelDy;
-        else if (modelDy < 0.0f && modelY > -0.95f)
-            modelY += modelDy;
+        Matrix.translateM(translateMatrix, 0, aniHero.getCurrentX(), aniHero.getCurrentY(), 0);
         Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        aniHero.draw(mvpMatrix);
+        boolean enableX = false, enableY = false;
+        if (aniHero.getVelocityX() > 0.0f && aniHero.getCurrentX() < 0.95f)
+            enableX = true;
+        else if (aniHero.getVelocityX() < 0.0f && aniHero.getCurrentX() > -0.95f)
+            enableX = true;
+        if (aniHero.getVelocityY() > 0.0f && aniHero.getCurrentY() < 0.95f)
+            enableY = true;
+        else if (aniHero.getVelocityY() < 0.0f && aniHero.getCurrentY() > -0.95f)
+            enableY = true;
+        aniHero.playFrame(enableX, enableY);
+        aniHero.draw(mvpMatrix, sprite);
 
         Matrix.setIdentityM(translateMatrix, 0);
         Matrix.translateM(translateMatrix, 0, -0.5f, 0.5f, 0);
         Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        aniDivoes[0].draw(mvpMatrix);
+        aniDivoes[0].draw(mvpMatrix, sprite);
 
         Matrix.setIdentityM(translateMatrix, 0);
         Matrix.translateM(translateMatrix, 0, 0.5f, 0.5f, 0);
         Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        aniDivoes[1].draw(mvpMatrix);
+        aniDivoes[1].draw(mvpMatrix, sprite);
 
         Matrix.setIdentityM(translateMatrix, 0);
         Matrix.translateM(translateMatrix, 0, -0.5f, -0.5f, 0);
         Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        aniDivoes[2].draw(mvpMatrix);
+        aniDivoes[2].draw(mvpMatrix, sprite);
 
         Matrix.setIdentityM(translateMatrix, 0);
         Matrix.translateM(translateMatrix, 0, 0.5f, -0.5f, 0);
         Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        aniDivoes[3].draw(mvpMatrix);
+        aniDivoes[3].draw(mvpMatrix, sprite);
 
         computeFPS();
     }

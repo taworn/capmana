@@ -9,8 +9,6 @@ import android.support.annotation.NonNull;
  */
 public class Animation implements Parcelable {
 
-    private Sprite sprite;
-
     private static final int PLAYING_MAX = 16;
 
     private static class PLAYING {
@@ -22,17 +20,25 @@ public class Animation implements Parcelable {
     private PLAYING[] plays = new PLAYING[PLAYING_MAX];
     private int currentPlaying;
     private int currentImage;
+
+    private float currentX, currentY;
+    private float velocityX, velocityY;
+
     private long timeStart;
 
     /**
      * Constructs an animation.
      */
-    public Animation(@NonNull Sprite s) {
-        sprite = s;
+    public Animation() {
         for (int i = 0; i < PLAYING_MAX; i++)
             plays[i] = new PLAYING();
         currentPlaying = -1;
         currentImage = 0;
+        currentX = 0;
+        currentY = 0;
+        velocityX = 0;
+        velocityY = 0;
+        timeStart = System.currentTimeMillis();
     }
 
     /**
@@ -60,7 +66,7 @@ public class Animation implements Parcelable {
     /**
      * Draws animation.
      */
-    public void draw(@NonNull float[] mvpMatrix) {
+    public void draw(@NonNull float[] mvpMatrix, @NonNull Sprite sprite) {
         sprite.draw(mvpMatrix, currentImage);
 
         long usage = System.currentTimeMillis() - timeStart;
@@ -70,6 +76,44 @@ public class Animation implements Parcelable {
                 currentImage = plays[currentPlaying].start;
             timeStart = System.currentTimeMillis();
         }
+    }
+
+    public float getCurrentX() {
+        return currentX;
+    }
+
+    public float getCurrentY() {
+        return currentY;
+    }
+
+    public float getVelocityX() {
+        return velocityX;
+    }
+
+    public float getVelocityY() {
+        return velocityY;
+    }
+
+    public void moveTo(float x, float y) {
+        currentX = x;
+        currentY = y;
+    }
+
+    public void moveBy(float dx, float dy) {
+        currentX += dx;
+        currentY += dy;
+    }
+
+    public void setVelocity(float x, float y) {
+        velocityX = x;
+        velocityY = y;
+    }
+
+    public void playFrame(boolean enableX, boolean enableY) {
+        if (enableX)
+            currentX += velocityX;
+        if (enableY)
+            currentY += velocityY;
     }
 
     /**
@@ -83,15 +127,11 @@ public class Animation implements Parcelable {
         }
         currentPlaying = parcel.readInt();
         currentImage = parcel.readInt();
+        currentX = parcel.readInt();
+        currentY = parcel.readInt();
+        velocityX = parcel.readInt();
+        velocityY = parcel.readInt();
         timeStart = System.currentTimeMillis();
-    }
-
-    /**
-     * Sets sprite.
-     */
-    public void setSprite(@NonNull Sprite s) {
-        sprite = s;
-        use(currentPlaying);
     }
 
     /**
@@ -106,6 +146,10 @@ public class Animation implements Parcelable {
         }
         parcel.writeInt(currentPlaying);
         parcel.writeInt(currentImage);
+        parcel.writeFloat(currentX);
+        parcel.writeFloat(currentY);
+        parcel.writeFloat(velocityX);
+        parcel.writeFloat(velocityY);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class Font {
     private int widthForOne;
 
     /**
-     * A heightForAll size, it equal to all characters.
+     * A height size, it equal to all characters.
      */
     private int heightForAll;
 

@@ -31,7 +31,23 @@ public class TitleScene extends Scene {
         super(bundle);
         Log.d(TAG, "TitleScene created");
         acquire(bundle);
+
+        final int TIME = 300;
+        aniHero = new Animation();
+        aniHero.add(0, 0, 2, TIME);
+        aniHero.add(1, 2, 4, TIME);
+        aniHero.add(2, 4, 6, TIME);
+        aniHero.add(3, 6, 8, TIME);
+        aniHero.use(0);
+
+        aniDivo = new Animation();
+        aniDivo.add(0, 8, 10, TIME);
+        aniDivo.add(1, 10, 12, TIME);
+        aniDivo.add(2, 12, 14, TIME);
+        aniDivo.add(3, 14, 16, TIME);
+        aniDivo.use(0);
         modelX = 0.0f;
+
         if (bundle != null) {
             onRestoreInstanceState(bundle);
         }
@@ -43,21 +59,6 @@ public class TitleScene extends Scene {
         Log.d(TAG, "acquire() called");
         titleFont = new Font(Game.instance().getContext(), 64, 0xFFFFFF80, Typeface.create((Typeface) null, Typeface.BOLD));
         sprite = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
-
-        final int TIME = 300;
-        aniHero = new Animation(sprite);
-        aniHero.add(0, 0, 2, TIME);
-        aniHero.add(1, 2, 4, TIME);
-        aniHero.add(2, 4, 6, TIME);
-        aniHero.add(3, 6, 8, TIME);
-        aniHero.use(0);
-
-        aniDivo = new Animation(sprite);
-        aniDivo.add(0, 8, 10, TIME);
-        aniDivo.add(1, 10, 12, TIME);
-        aniDivo.add(2, 12, 14, TIME);
-        aniDivo.add(3, 14, 16, TIME);
-        aniDivo.use(0);
     }
 
     @Override
@@ -97,8 +98,6 @@ public class TitleScene extends Scene {
         if (savedInstanceState != null) {
             modelX = savedInstanceState.getFloat("modelX");
             aniHero = savedInstanceState.getParcelable("aniHero");
-            if (aniHero != null)
-                aniHero.setSprite(sprite);
         }
     }
 
@@ -152,13 +151,13 @@ public class TitleScene extends Scene {
         Matrix.translateM(translateMatrix, 0, modelX, 0.0f, 0.0f);
         Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        aniHero.draw(mvpMatrix);
+        aniHero.draw(mvpMatrix, sprite);
 
         Matrix.setIdentityM(translateMatrix, 0);
         Matrix.translateM(translateMatrix, 0, modelX - 0.15f, 0.0f, 0.0f);
         Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        aniDivo.draw(mvpMatrix);
+        aniDivo.draw(mvpMatrix, sprite);
 
         modelX -= 0.01f;
         if (modelX < -1.0f)
