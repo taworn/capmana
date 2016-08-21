@@ -23,8 +23,8 @@ public class TitleScene extends Scene {
 
     private Font titleFont;
     private Sprite sprite;
-    private Animation aniHero;
     private Animation aniDivo;
+    private Animation aniHero;
     private float modelX;
 
     public TitleScene(@Nullable Bundle bundle) {
@@ -33,6 +33,13 @@ public class TitleScene extends Scene {
         acquire(bundle);
 
         final int TIME = 300;
+        aniDivo = new Animation();
+        aniDivo.add(0, 8, 10, TIME);
+        aniDivo.add(1, 10, 12, TIME);
+        aniDivo.add(2, 12, 14, TIME);
+        aniDivo.add(3, 14, 16, TIME);
+        aniDivo.use(0);
+
         aniHero = new Animation();
         aniHero.add(0, 0, 2, TIME);
         aniHero.add(1, 2, 4, TIME);
@@ -40,12 +47,6 @@ public class TitleScene extends Scene {
         aniHero.add(3, 6, 8, TIME);
         aniHero.use(0);
 
-        aniDivo = new Animation();
-        aniDivo.add(0, 8, 10, TIME);
-        aniDivo.add(1, 10, 12, TIME);
-        aniDivo.add(2, 12, 14, TIME);
-        aniDivo.add(3, 14, 16, TIME);
-        aniDivo.use(0);
         modelX = 0.0f;
 
         if (bundle != null) {
@@ -55,8 +56,8 @@ public class TitleScene extends Scene {
 
     @Override
     public void acquire(@Nullable Bundle bundle) {
-        super.acquire(bundle);
         Log.d(TAG, "acquire() called");
+        super.acquire(bundle);
         titleFont = new Font(Game.instance().getContext(), 64, 0xFFFFFF80, Typeface.create((Typeface) null, Typeface.BOLD));
         sprite = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
     }
@@ -77,27 +78,29 @@ public class TitleScene extends Scene {
 
     @Override
     public void onResume() {
-        super.onResume();
         Log.d(TAG, "onResume()");
+        super.onResume();
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         Log.d(TAG, "onSaveInstanceState()");
         if (savedInstanceState != null) {
-            savedInstanceState.putFloat("modelX", modelX);
+            savedInstanceState.putParcelable("aniDivo", aniDivo);
             savedInstanceState.putParcelable("aniHero", aniHero);
+            savedInstanceState.putFloat("modelX", modelX);
         }
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
         Log.d(TAG, "onRestoreInstanceState()");
+        super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
-            modelX = savedInstanceState.getFloat("modelX");
+            aniDivo = savedInstanceState.getParcelable("aniDivo");
             aniHero = savedInstanceState.getParcelable("aniHero");
+            modelX = savedInstanceState.getFloat("modelX");
         }
     }
 
