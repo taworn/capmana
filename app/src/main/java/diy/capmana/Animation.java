@@ -104,9 +104,9 @@ public class Animation implements Parcelable {
         currentY += dy;
     }
 
-    public void setVelocity(float x, float y) {
-        velocityX = x;
-        velocityY = y;
+    public void setVelocity(float dx, float dy) {
+        velocityX = dx;
+        velocityY = dy;
     }
 
     public void playFrame(boolean enableX, boolean enableY) {

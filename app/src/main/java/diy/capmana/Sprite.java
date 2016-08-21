@@ -53,15 +53,11 @@ public class Sprite {
         bitmap.recycle();
 
         uData.clear();
-        for (int i = 0; i <= sliceHorz; i++) {
-            float f = (float) i / sliceHorz;
-            uData.add(f);
-        }
+        for (int i = 0; i <= sliceHorz; i++)
+            uData.add((float) i / sliceHorz);
         vData.clear();
-        for (int i = 0; i <= sliceVert; i++) {
-            float f = (float) i / sliceVert;
-            vData.add(f);
-        }
+        for (int i = 0; i <= sliceVert; i++)
+            vData.add((float) i / sliceVert);
         this.sliceHorz = sliceHorz;
         this.sliceVert = sliceVert;
     }
