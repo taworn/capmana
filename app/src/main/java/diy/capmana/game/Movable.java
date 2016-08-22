@@ -3,11 +3,8 @@ package diy.capmana.game;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.opengl.Matrix;
-<<<<<<< HEAD
 import android.os.Parcel;
 import android.os.Parcelable;
-=======
->>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
 
 import diy.capmana.Animation;
 import diy.capmana.Sprite;
@@ -15,11 +12,7 @@ import diy.capmana.Sprite;
 /**
  * A movable class.
  */
-<<<<<<< HEAD
 public class Movable implements Parcelable {
-=======
-public class Movable {
->>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
 
     public static final int TIME_PER_ANI_FRAME = 250;
 
@@ -205,7 +198,6 @@ public class Movable {
         return animation.getVelocityY();
     }
 
-<<<<<<< HEAD
     /**
      * Constructs the movable with parcel.
      */
@@ -262,6 +254,4 @@ public class Movable {
         }
     };
 
-=======
->>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
 }

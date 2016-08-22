@@ -27,11 +27,6 @@ public class PlayScene extends Scene {
     private Divo[] movDivoes;
     private Pacman movHero;
     private long timeStart;
-<<<<<<< HEAD
-=======
-    private Animation aniHero;
-    private Animation[] aniDivoes = new Animation[4];
->>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
 
     public PlayScene(@Nullable Bundle bundle) {
         super(bundle);
@@ -41,26 +36,6 @@ public class PlayScene extends Scene {
         map = new Map();
         map.load();
         movDivoes = new Divo[4];
-<<<<<<< HEAD
-=======
-        for (int i = 0; i < 4; i++) {
-            movDivoes[i] = new Divo();
-            movDivoes[i].setId(i);
-            movDivoes[i].setMap(map);
-        }
-        movHero = new Pacman();
-        movHero.setMap(map);
-        timeStart = System.currentTimeMillis();
-
-        final int TIME = 300;
-        aniHero = new Animation();
-        aniHero.add(0, 0, 2, TIME);
-        aniHero.add(1, 2, 4, TIME);
-        aniHero.add(2, 4, 6, TIME);
-        aniHero.add(3, 6, 8, TIME);
-        aniHero.use(0);
-
->>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
         for (int i = 0; i < 4; i++) {
             movDivoes[i] = new Divo();
             movDivoes[i].setId(i);
@@ -169,10 +144,6 @@ public class PlayScene extends Scene {
         float[] projectionMatrix = new float[16];
         float[] viewMatrix = new float[16];
         float[] viewProjectMatrix = new float[16];
-<<<<<<< HEAD
-=======
-        float[] translateMatrix = new float[16];
->>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
         float[] scaleMatrix = new float[16];
         Matrix.orthoM(projectionMatrix, 0, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 25.0f);
         Matrix.setLookAtM(viewMatrix, 0,
@@ -180,29 +151,9 @@ public class PlayScene extends Scene {
                 0.0f, 0.0f, -15.0f,  // at
                 0.0f, 1.0f, 0.0f);   // up
         Matrix.multiplyMM(viewProjectMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-<<<<<<< HEAD
-=======
 
         // sets scaling
         Matrix.setIdentityM(scaleMatrix, 0);
-        Matrix.scaleM(scaleMatrix, 0, 0.0625f, 0.0625f, 1.0f);
-        PointF scaleUp = new PointF(16.0f, 16.0f);
-
-        // drawing
-        map.draw(spriteMap, viewProjectMatrix, scaleMatrix, scaleUp);
-        movDivoes[0].draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
-        movDivoes[1].draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
-        movDivoes[2].draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
-        movDivoes[3].draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
-        movHero.draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
-
-
-        float[] tempMatrix = new float[16];
->>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
-
-        // sets scaling
-        Matrix.setIdentityM(scaleMatrix, 0);
-<<<<<<< HEAD
         Matrix.scaleM(scaleMatrix, 0, 0.0625f, 0.0625f, 1.0f);
         PointF scaleUp = new PointF(16.0f, 16.0f);
 
@@ -219,48 +170,6 @@ public class PlayScene extends Scene {
             if (movDivoes[i].isIdle())
                 movDivoes[i].nextMove();
         }
-=======
-        Matrix.scaleM(scaleMatrix, 0, 0.05f, 0.05f, 1.0f);
-        Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, aniHero.getCurrentX(), aniHero.getCurrentY(), 0);
-        Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
-        Matrix.multiplyMM(mvpMatrix, 0, viewProjectMatrix, 0, tempMatrix, 0);
-        boolean enableX = false, enableY = false;
-        if (aniHero.getVelocityX() > 0.0f && aniHero.getCurrentX() < 0.95f)
-            enableX = true;
-        else if (aniHero.getVelocityX() < 0.0f && aniHero.getCurrentX() > -0.95f)
-            enableX = true;
-        if (aniHero.getVelocityY() > 0.0f && aniHero.getCurrentY() < 0.95f)
-            enableY = true;
-        else if (aniHero.getVelocityY() < 0.0f && aniHero.getCurrentY() > -0.95f)
-            enableY = true;
-        aniHero.playFrame(enableX, enableY);
-        aniHero.draw(mvpMatrix, spritePacman);
-
-        Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, -0.5f, 0.5f, 0);
-        Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
-        Matrix.multiplyMM(mvpMatrix, 0, viewProjectMatrix, 0, tempMatrix, 0);
-        aniDivoes[0].draw(mvpMatrix, spritePacman);
-
-        Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, 0.5f, 0.5f, 0);
-        Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
-        Matrix.multiplyMM(mvpMatrix, 0, viewProjectMatrix, 0, tempMatrix, 0);
-        aniDivoes[1].draw(mvpMatrix, spritePacman);
-
-        Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, -0.5f, -0.5f, 0);
-        Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
-        Matrix.multiplyMM(mvpMatrix, 0, viewProjectMatrix, 0, tempMatrix, 0);
-        aniDivoes[2].draw(mvpMatrix, spritePacman);
-
-        Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, 0.5f, -0.5f, 0);
-        Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
-        Matrix.multiplyMM(mvpMatrix, 0, viewProjectMatrix, 0, tempMatrix, 0);
-        aniDivoes[3].draw(mvpMatrix, spritePacman);
->>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
 
         computeFPS();
     }
