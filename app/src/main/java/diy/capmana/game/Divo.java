@@ -60,7 +60,11 @@ public class Divo extends Movable {
                 if ((dirs & Map.MOVE_RIGHT) == Map.MOVE_RIGHT) randoms[end++] = Map.MOVE_RIGHT;
                 if ((dirs & Map.MOVE_UP) == Map.MOVE_UP) randoms[end++] = Map.MOVE_UP;
                 if ((dirs & Map.MOVE_DOWN) == Map.MOVE_DOWN) randoms[end] = Map.MOVE_DOWN;
+<<<<<<< HEAD
                 nextDirection = randoms[random.nextInt(2)];
+=======
+                nextDirection = randoms[random.nextInt() % 2];
+>>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
             }
         }
 
@@ -72,7 +76,11 @@ public class Divo extends Movable {
             if ((dirs & Map.MOVE_UP) == Map.MOVE_UP) randoms[end++] = Map.MOVE_UP;
             if ((dirs & Map.MOVE_DOWN) == Map.MOVE_DOWN) randoms[end++] = Map.MOVE_DOWN;
             if (nextDirection != 0) randoms[end++] = nextDirection;
+<<<<<<< HEAD
             nextDirection = randoms[random.nextInt(end)];
+=======
+            nextDirection = randoms[random.nextInt() % end];
+>>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
         }
 
         move(nextDirection);

@@ -3,8 +3,11 @@ package diy.capmana.game;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.opengl.Matrix;
+<<<<<<< HEAD
 import android.os.Parcel;
 import android.os.Parcelable;
+=======
+>>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +17,11 @@ import diy.capmana.Sprite;
 /**
  * A map class.
  */
+<<<<<<< HEAD
 public class Map implements Parcelable {
+=======
+public class Map {
+>>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
 
     public static final int MOVE_LEFT = 1;
     public static final int MOVE_RIGHT = 2;
@@ -99,7 +106,11 @@ public class Map implements Parcelable {
         length = height + 1;
         vertBounds.clear();
         for (int i = 0; i < length; i++)
+<<<<<<< HEAD
             vertBounds.add((float) (length - 1 - i) / (length - 1) * 2.0f - 1.0f);
+=======
+            vertBounds.add((float) i / (length - 1) * 2.0f - 1.0f);
+>>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
 
         length = height;
         vertPoints.clear();
@@ -257,6 +268,7 @@ public class Map implements Parcelable {
         }
     }
 
+<<<<<<< HEAD
     /**
      * Constructs the map with parcel.
      */
@@ -337,4 +349,6 @@ public class Map implements Parcelable {
         }
     };
 
+=======
+>>>>>>> 3ea74d743dba11f58466f3986c39d4b0371fa28b
 }
