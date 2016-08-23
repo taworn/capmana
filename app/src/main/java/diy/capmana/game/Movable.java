@@ -161,7 +161,7 @@ public class Movable implements Parcelable {
     /**
      * Draws movable.
      */
-    public void draw(Sprite sprite, float[] viewProjectMatrix, float[] scaleMatrix, PointF scaleUp) {
+    public void draw(Sprite sprite, float[] viewProjectMatrix, float[] scaleMatrix) {
         float[] translateMatrix = new float[16];
         float[] modelMatrix = new float[16];
         float[] mvpMatrix = new float[16];
@@ -215,7 +215,7 @@ public class Movable implements Parcelable {
         timePerDistance = parcel.readLong();
         timeUsed = parcel.readLong();
 
-        animation = (Animation) parcel.readParcelable(Animation.class.getClassLoader());
+        animation = parcel.readParcelable(Animation.class.getClassLoader());
     }
 
     /**

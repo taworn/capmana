@@ -1,6 +1,5 @@
 package diy.capmana.scenes;
 
-import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Bundle;
@@ -152,18 +151,19 @@ public class PlayScene extends Scene {
                 0.0f, 1.0f, 0.0f);   // up
         Matrix.multiplyMM(viewProjectMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
-        // sets scaling
+        // drawing map
+        Matrix.setIdentityM(scaleMatrix, 0);
+        Matrix.scaleM(scaleMatrix, 0, 1.0f, 1.0f, 1.0f);
+        map.draw(spriteMap, viewProjectMatrix, scaleMatrix);
+
+        // drawing movables
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.scaleM(scaleMatrix, 0, 0.0625f, 0.0625f, 1.0f);
-        PointF scaleUp = new PointF(16.0f, 16.0f);
-
-        // drawing
-        map.draw(spriteMap, viewProjectMatrix, scaleMatrix, scaleUp);
-        movDivoes[0].draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
-        movDivoes[1].draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
-        movDivoes[2].draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
-        movDivoes[3].draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
-        movHero.draw(spritePacman, viewProjectMatrix, scaleMatrix, scaleUp);
+        movDivoes[0].draw(spritePacman, viewProjectMatrix, scaleMatrix);
+        movDivoes[1].draw(spritePacman, viewProjectMatrix, scaleMatrix);
+        movDivoes[2].draw(spritePacman, viewProjectMatrix, scaleMatrix);
+        movDivoes[3].draw(spritePacman, viewProjectMatrix, scaleMatrix);
+        movHero.draw(spritePacman, viewProjectMatrix, scaleMatrix);
 
         // checks idling
         for (int i = 0; i < 4; i++) {

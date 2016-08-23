@@ -111,6 +111,95 @@ public class Sprite {
     }
 
     /**
+     * Draws batch sprites.
+     */
+    public void drawBatch(@NonNull float[] mvpMatrix, List<Float> horz, List<Float> vert, int[] imageIndex) {
+        TextureShader shader = Game.instance().getTextureShader();
+        shader.useProgram();
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        GLES20.glEnable(GLES20.GL_BLEND);
+
+        // uses texture
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, handle[0]);
+        GLES20.glUniform1i(shader.getSampler(), 0);
+
+        int width = horz.size() - 1;
+        int height = vert.size() - 1;
+        float[] verticesData = new float[5 * width * height * 6];
+        int indices = 0;
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                int index = imageIndex[j * width + i];
+                int uIndex = index % sliceHorz;
+                int vIndex = index / sliceVert;
+                float u0 = uData.get(uIndex);
+                float u1 = uData.get(uIndex + 1);
+                float v0 = vData.get(vIndex);
+                float v1 = vData.get(vIndex + 1);
+
+                // 1
+                verticesData[indices++] = horz.get(i + 1);
+                verticesData[indices++] = vert.get(j + 1);
+                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = u1;
+                verticesData[indices++] = v1;
+
+                // 2
+                verticesData[indices++] = horz.get(i + 1);
+                verticesData[indices++] = vert.get(j);
+                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = u1;
+                verticesData[indices++] = v0;
+
+                // 3
+                verticesData[indices++] = horz.get(i);
+                verticesData[indices++] = vert.get(j + 1);
+                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = u0;
+                verticesData[indices++] = v1;
+
+                // 4
+                verticesData[indices++] = horz.get(i + 1);
+                verticesData[indices++] = vert.get(j);
+                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = u1;
+                verticesData[indices++] = v0;
+
+                // 5
+                verticesData[indices++] = horz.get(i);
+                verticesData[indices++] = vert.get(j);
+                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = u0;
+                verticesData[indices++] = v0;
+
+                // 6
+                verticesData[indices++] = horz.get(i);
+                verticesData[indices++] = vert.get(j + 1);
+                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = u0;
+                verticesData[indices++] = v1;
+            }
+        }
+        FloatBuffer verticesBuffer = ByteBuffer.allocateDirect(verticesData.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        verticesBuffer.put(verticesData).position(0);
+
+        // passing positions
+        verticesBuffer.position(0);
+        GLES20.glVertexAttribPointer(shader.getPosition(), 3, GLES20.GL_FLOAT, false, 5 * 4, verticesBuffer);
+        GLES20.glEnableVertexAttribArray(shader.getPosition());
+
+        // passing sprite coordinates
+        verticesBuffer.position(3);
+        GLES20.glVertexAttribPointer(shader.getCoord(), 2, GLES20.GL_FLOAT, false, 5 * 4, verticesBuffer);
+        GLES20.glEnableVertexAttribArray(shader.getCoord());
+
+        // drawing
+        GLES20.glUniformMatrix4fv(shader.getMVPMatrix(), 1, false, mvpMatrix, 0);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, width * height * 6);
+    }
+
+    /**
      * Gets number of images.
      */
     public int getImageCount() {
