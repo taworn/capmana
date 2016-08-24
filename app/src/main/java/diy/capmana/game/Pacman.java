@@ -1,11 +1,13 @@
 package diy.capmana.game;
 
 import android.graphics.PointF;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * A pacman class.
  */
-public class Pacman extends Movable {
+public class Pacman extends Movable implements Parcelable {
 
     /**
      * Constructs the pacman.
@@ -30,5 +32,37 @@ public class Pacman extends Movable {
         map.getPacmanStartPosition(point, pf);
         animation.moveTo(pf.x, pf.y);
     }
+
+    /**
+     * Constructs the pacman with parcel.
+     */
+    protected Pacman(Parcel parcel) {
+        super(parcel);
+    }
+
+    /**
+     * Writes data to parcel.
+     */
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        super.writeToParcel(parcel, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Pacman> CREATOR = new Creator<Pacman>() {
+        @Override
+        public Pacman createFromParcel(Parcel in) {
+            return new Pacman(in);
+        }
+
+        @Override
+        public Pacman[] newArray(int size) {
+            return new Pacman[size];
+        }
+    };
 
 }

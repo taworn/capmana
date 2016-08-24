@@ -13,6 +13,7 @@ import android.view.View;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import diy.capmana.scenes.GameOverScene;
 import diy.capmana.scenes.PlayScene;
 import diy.capmana.scenes.Scene;
 import diy.capmana.scenes.TitleScene;
@@ -27,7 +28,10 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
     public static final int SCENE_DEFAULT = 0;
     public static final int SCENE_TITLE = 1;
-    public static final int SCENE_PLAY = 2;
+    public static final int SCENE_STAGE = 2;
+    public static final int SCENE_PLAY = 3;
+    public static final int SCENE_GAMEOVER = 4;
+    public static final int SCENE_WIN = 5;
 
     public static Game instance() {
         return singleton;
@@ -152,8 +156,17 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
             case SCENE_TITLE:
                 scene = new TitleScene(bundle);
                 break;
+            case SCENE_STAGE:
+                //scene = new StageScene(bundle);
+                break;
             case SCENE_PLAY:
                 scene = new PlayScene(bundle);
+                break;
+            case SCENE_GAMEOVER:
+                scene = new GameOverScene(bundle);
+                break;
+            case SCENE_WIN:
+                //scene = new WinScene(bundle);
                 break;
         }
         bundle = null;
