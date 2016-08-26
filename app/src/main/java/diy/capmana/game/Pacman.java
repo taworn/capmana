@@ -1,8 +1,10 @@
 package diy.capmana.game;
 
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * A pacman class.
@@ -13,24 +15,60 @@ public class Pacman extends Movable implements Parcelable {
      * Constructs the pacman.
      */
     public Pacman() {
-        timePerDistance = 200;
-        animation.add(0, 0, 2, TIME_PER_ANI_FRAME);
-        animation.add(1, 2, 4, TIME_PER_ANI_FRAME);
-        animation.add(2, 4, 6, TIME_PER_ANI_FRAME);
-        animation.add(3, 6, 8, TIME_PER_ANI_FRAME);
-        animation.use(0);
+        setTimes(200, 1000);
+        getAnimation().add(ACTION_LEFT, 0, 2, TIME_PER_ANI_FRAME);
+        getAnimation().add(ACTION_RIGHT, 2, 4, TIME_PER_ANI_FRAME);
+        getAnimation().add(ACTION_UP, 4, 6, TIME_PER_ANI_FRAME);
+        getAnimation().add(ACTION_DOWN, 6, 8, TIME_PER_ANI_FRAME);
+        getAnimation().use(ACTION_LEFT);
     }
 
     /**
-     * Sets map.
+     * Detects enemies within rectangle.
      */
-    public void setMap(Map map) {
-        assert (map != null);
-        this.map = map;
+    public void detect() {
+        final float RANGE = 0.03125f;
+        float x = getCurrentX();
+        float y = getCurrentY();
+        float left = x - RANGE;
+        float top = y + RANGE;
+        float right = x + RANGE;
+        float bottom = y - RANGE;
 
+        GameData gameData = GameData.instance();
+        int count = gameData.getDivoCount();
+        int i = 0;
+        boolean detected = false;
+        while (i < count) {
+            Divo divo = gameData.getDivo(i);
+            float divoX = divo.getCurrentX();
+            float divoY = divo.getCurrentY();
+
+            if (!divo.isDead()) {
+                if (left < divoX && top > divoY && divoX < right && divoY > bottom) {
+                    detected = true;
+                    break;
+                }
+            }
+
+            i++;
+        }
+
+        if (detected) {
+            Divo divo = gameData.getDivo(i);
+            divo.kill();
+            Log.d(TAG, "eat Divo #" + i);
+        }
+    }
+
+    public void setMap(Map map) {
+        super.setMap(map);
+
+        Point p = new Point(0, 0);
         PointF pf = new PointF(0, 0);
-        map.getPacmanStartPosition(point, pf);
-        animation.moveTo(pf.x, pf.y);
+        getMap().getPacmanStartPosition(p, pf);
+        setXY(p.x, p.y);
+        getAnimation().moveTo(pf.x, pf.y);
     }
 
     /**

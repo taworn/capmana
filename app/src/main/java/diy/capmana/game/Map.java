@@ -20,11 +20,6 @@ public class Map implements Parcelable {
 
     private static final String TAG = Map.class.getSimpleName();
 
-    public static final int MOVE_LEFT = 1;
-    public static final int MOVE_RIGHT = 2;
-    public static final int MOVE_UP = 4;
-    public static final int MOVE_DOWN = 8;
-
     private class MapData {
         public boolean block;
         public boolean eat;
@@ -133,10 +128,10 @@ public class Map implements Parcelable {
         for (int i = 0; i < length; i++)
             vertPoints.add((vertBounds.get(i) + vertBounds.get(i + 1)) / 2.0f);
 
-        startDivo.x = 8;
-        startDivo.y = 1;
-        startPacman.x = 8;
-        startPacman.y = 10;
+        startDivo.x = 4;
+        startDivo.y = 4;
+        startPacman.x = 9;
+        startPacman.y = 1;
         return true;
     }
 
@@ -166,7 +161,7 @@ public class Map implements Parcelable {
     public boolean canMove(Movable movable, int direction, Point p, PointF pf) {
         MapData data = new MapData();
 
-        if (direction == MOVE_LEFT) {
+        if (direction == Movable.MOVE_LEFT) {
             int current = movable.getX();
             int next = current - 1;
             if (next >= 0) {
@@ -180,7 +175,7 @@ public class Map implements Parcelable {
                 }
             }
         }
-        else if (direction == MOVE_RIGHT) {
+        else if (direction == Movable.MOVE_RIGHT) {
             int current = movable.getX();
             int next = current + 1;
             if (next < width) {
@@ -194,7 +189,7 @@ public class Map implements Parcelable {
                 }
             }
         }
-        else if (direction == MOVE_UP) {
+        else if (direction == Movable.MOVE_UP) {
             int current = movable.getY();
             int next = current - 1;
             if (next >= 0) {
@@ -208,7 +203,7 @@ public class Map implements Parcelable {
                 }
             }
         }
-        else if (direction == MOVE_DOWN) {
+        else if (direction == Movable.MOVE_DOWN) {
             int current = movable.getY();
             int next = current + 1;
             if (next < height) {
@@ -240,22 +235,22 @@ public class Map implements Parcelable {
         // left
         data.from(mapData[y * width + x - 1]);
         if (x > 0 && !data.block)
-            result |= MOVE_LEFT;
+            result |= Movable.MOVE_LEFT;
 
         // right
         data.from(mapData[y * width + x + 1]);
         if (x < width - 1 && !data.block)
-            result |= MOVE_RIGHT;
+            result |= Movable.MOVE_RIGHT;
 
         // up
         data.from(mapData[(y - 1) * width + x]);
         if (y > 0 && !data.block)
-            result |= MOVE_UP;
+            result |= Movable.MOVE_UP;
 
         // down
         data.from(mapData[(y + 1) * width + x]);
         if (y < height - 1 && !data.block)
-            result |= MOVE_DOWN;
+            result |= Movable.MOVE_DOWN;
 
         return result;
     }

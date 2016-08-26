@@ -13,6 +13,7 @@ import android.view.View;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import diy.capmana.game.GameData;
 import diy.capmana.scenes.GameOverScene;
 import diy.capmana.scenes.PlayScene;
 import diy.capmana.scenes.Scene;
@@ -56,6 +57,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     private int screenHeight;
 
     private Scene scene;
+    private GameData gameData;
 
     /**
      * Initializes the game engine.
@@ -69,6 +71,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         bundle = null;
         currentSceneId = SCENE_TITLE;
         scene = null;
+        gameData = new GameData();
     }
 
     public void onPause() {
@@ -88,6 +91,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         bundle = new Bundle();
         savedInstanceState.putBundle("bundle", bundle);
         savedInstanceState.putInt("currentSceneId", currentSceneId);
+        savedInstanceState.putParcelable("gameData", gameData);
         if (scene != null)
             scene.onSaveInstanceState(bundle);
     }
@@ -96,6 +100,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         Log.d(TAG, "onRestoreInstanceState()");
         bundle = savedInstanceState.getBundle("bundle");
         currentSceneId = savedInstanceState.getInt("currentSceneId");
+        gameData = savedInstanceState.getParcelable("gameData");
         if (scene != null)
             scene.onRestoreInstanceState(bundle);
     }

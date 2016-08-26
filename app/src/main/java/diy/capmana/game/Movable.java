@@ -14,18 +14,44 @@ import diy.capmana.Sprite;
  */
 public class Movable implements Parcelable {
 
+    public static final String TAG = Movable.class.getSimpleName();
+
+    public static final int MOVE_LEFT = 1;
+    public static final int MOVE_RIGHT = 2;
+    public static final int MOVE_UP = 4;
+    public static final int MOVE_DOWN = 8;
+
+    public static final int ACTION_LEFT = 0;
+    public static final int ACTION_RIGHT = 1;
+    public static final int ACTION_UP = 2;
+    public static final int ACTION_DOWN = 3;
+    public static final int ACTION_DEAD = 4;
+
     public static final int TIME_PER_ANI_FRAME = 250;
 
-    protected Point point = new Point(0, 0);
-    protected boolean walking = false;
-    protected float distance = 0;
-    protected float target = 0;
-    protected int currentDirection = 0;
-    protected int nextDirection = 0;
-    protected long timePerDistance = 350;
-    protected long timeUsed = 0;
-    protected Animation animation = new Animation();
-    protected Map map = null;
+    /**
+     * Point (x, y) in integer.
+     */
+    private Point point = new Point(0, 0);
+
+    // state flags
+    private boolean dead = false;
+    private boolean animating = false;
+
+    // moving animation
+    private float distanceX = 0.0f;
+    private float distanceY = 0.0f;
+    private float targetX = 0.0f;
+    private float targetY = 0.0f;
+    private int currentDirection = 0;
+    private int nextDirection = 0;
+    private long timePerMove = 250;
+    private long timePerDead = 750;
+    private long timePerDistance = 0;
+    private long timeUsed = 0;
+    private Animation animation = new Animation();
+
+    private Map map = null;
 
     /**
      * Constructs the movable.
@@ -34,128 +60,137 @@ public class Movable implements Parcelable {
     }
 
     /**
+     * Moves by direction, use constant Map::MOVE_*.
+     */
+    public void move(int direction) {
+        if (!dead) {
+            if (!animating) {
+                PointF pf = new PointF(0, 0);
+
+                if (direction == MOVE_LEFT)
+                    animation.use(ACTION_LEFT);
+                else if (direction == MOVE_RIGHT)
+                    animation.use(ACTION_RIGHT);
+                else if (direction == MOVE_UP)
+                    animation.use(ACTION_UP);
+                else if (direction == MOVE_DOWN)
+                    animation.use(ACTION_DOWN);
+
+                if (map.canMove(this, direction, point, pf)) {
+                    distanceX = pf.x - animation.getCurrentX();
+                    distanceY = pf.y - animation.getCurrentY();
+                    targetX = pf.x;
+                    targetY = pf.y;
+                    currentDirection = direction;
+                    nextDirection = direction;
+                    timePerDistance = timePerMove;
+                    timeUsed = 0;
+                    animating = true;
+                }
+            }
+            else {
+                // for Pacman, use this for controller
+                nextDirection = direction;
+            }
+        }
+    }
+
+    /**
+     * Moves to (x, y) directly.
+     */
+    public void moveDirect(Point p, PointF pf) {
+        distanceX = pf.x - animation.getCurrentX();
+        distanceY = pf.y - animation.getCurrentY();
+        targetX = pf.x;
+        targetY = pf.y;
+        timePerDistance = timePerDead;
+        timeUsed = 0;
+        animating = true;
+    }
+
+    /**
+     * Chooses next action.  This function is called after play() is completed.
+     */
+    public void nextAction() {
+        if (!dead) {
+            move(decision(nextDirection));
+        }
+    }
+
+    /**
+     * Plays animation after call move() or moveDirectly().
+     */
+    public void play(long timeUsed) {
+        if (animating) {
+            if (this.timeUsed + timeUsed < timePerDistance) {
+                float dx = timeUsed * distanceX / timePerDistance;
+                float dy = timeUsed * distanceY / timePerDistance;
+                animation.moveBy(dx, dy);
+                this.timeUsed += timeUsed;
+            }
+            else {
+                animation.moveTo(targetX, targetY);
+                animating = false;
+                nextAction();
+            }
+        }
+    }
+
+    /**
+     * Kills this movable.  Inherit class should derived this function.
+     */
+    public void kill() {
+        dead = true;
+    }
+
+    /**
+     * Checks whether movable is dead.
+     */
+    public boolean isDead() {
+        return dead;
+    }
+
+    /**
+     * Checks whether movable is busing or idling.
+     */
+    public boolean isIdle() {
+        return !animating;
+    }
+
+    /**
+     * Gets X-coordinates in integer.
+     */
+    public int getX() {
+        return point.x;
+    }
+
+    /**
+     * Gets Y-coordinates in integer.
+     */
+    public int getY() {
+        return point.y;
+    }
+
+    /**
+     * Gets X-coordinates in float.
+     */
+    public float getCurrentX() {
+        return animation.getCurrentX();
+    }
+
+    /**
+     * Gets Y-coordinates in float.
+     */
+    public float getCurrentY() {
+        return animation.getCurrentY();
+    }
+
+    /**
      * Sets map.  Used to bind Movable with Map.
      */
     public void setMap(Map map) {
-    }
-
-    /**
-     * Moves with direction, use constant Map::MOVE_*.
-     */
-    public void move(int direction) {
-        if (!walking) {
-            PointF pf = new PointF(0, 0);
-            if (direction == Map.MOVE_LEFT) {
-                animation.use(0);
-                if (map.canMove(this, direction, point, pf)) {
-                    distance = animation.getCurrentX() - pf.x;
-                    target = pf.x;
-                    currentDirection = direction;
-                    nextDirection = direction;
-                    timeUsed = 0;
-                    walking = true;
-                }
-            }
-            else if (direction == Map.MOVE_RIGHT) {
-                animation.use(1);
-                if (map.canMove(this, direction, point, pf)) {
-                    distance = pf.x - animation.getCurrentX();
-                    target = pf.x;
-                    currentDirection = direction;
-                    nextDirection = direction;
-                    timeUsed = 0;
-                    walking = true;
-                }
-            }
-            else if (direction == Map.MOVE_UP) {
-                animation.use(2);
-                if (map.canMove(this, direction, point, pf)) {
-                    distance = pf.y - animation.getCurrentY();
-                    target = pf.y;
-                    currentDirection = direction;
-                    nextDirection = direction;
-                    timeUsed = 0;
-                    walking = true;
-                }
-            }
-            else if (direction == Map.MOVE_DOWN) {
-                animation.use(3);
-                if (map.canMove(this, direction, point, pf)) {
-                    distance = animation.getCurrentY() - pf.y;
-                    target = pf.y;
-                    currentDirection = direction;
-                    nextDirection = direction;
-                    timeUsed = 0;
-                    walking = true;
-                }
-            }
-        }
-        else {
-            nextDirection = direction;
-        }
-    }
-
-    /**
-     * After move animation completed, it's call this function.
-     */
-    public void nextMove() {
-        move(nextDirection);
-    }
-
-    /**
-     * Moves with direction, use constant Map::MOVE_*.
-     */
-    public void play(long timeUsed) {
-        if (walking) {
-            if (currentDirection == Map.MOVE_LEFT) {
-                if (this.timeUsed + timeUsed < timePerDistance) {
-                    float d = timeUsed * distance / timePerDistance;
-                    animation.moveBy(-d, 0);
-                    this.timeUsed += timeUsed;
-                }
-                else {
-                    animation.moveTo(target, animation.getCurrentY());
-                    walking = false;
-                    nextMove();
-                }
-            }
-            else if (currentDirection == Map.MOVE_RIGHT) {
-                if (this.timeUsed + timeUsed < timePerDistance) {
-                    float d = timeUsed * distance / timePerDistance;
-                    animation.moveBy(d, 0);
-                    this.timeUsed += timeUsed;
-                }
-                else {
-                    animation.moveTo(target, animation.getCurrentY());
-                    walking = false;
-                    nextMove();
-                }
-            }
-            else if (currentDirection == Map.MOVE_UP) {
-                if (this.timeUsed + timeUsed < timePerDistance) {
-                    float d = timeUsed * distance / timePerDistance;
-                    animation.moveBy(0, d);
-                    this.timeUsed += timeUsed;
-                }
-                else {
-                    animation.moveTo(animation.getCurrentX(), target);
-                    walking = false;
-                    nextMove();
-                }
-            }
-            else if (currentDirection == Map.MOVE_DOWN) {
-                if (this.timeUsed + timeUsed < timePerDistance) {
-                    float d = timeUsed * distance / timePerDistance;
-                    animation.moveBy(0, -d);
-                    this.timeUsed += timeUsed;
-                }
-                else {
-                    animation.moveTo(animation.getCurrentX(), target);
-                    walking = false;
-                    nextMove();
-                }
-            }
-        }
+        assert map != null;
+        this.map = map;
     }
 
     /**
@@ -174,28 +209,35 @@ public class Movable implements Parcelable {
         animation.draw(mvpMatrix, sprite);
     }
 
-    public int getX() {
-        return point.x;
+    /**
+     * Chooses which action after animation is completed.
+     */
+    protected int decision(int moveDirection) {
+        return moveDirection;
     }
 
-    public int getY() {
-        return point.y;
+    /**
+     * Sets start position.
+     */
+    protected void setXY(int x, int y) {
+        point.x = x;
+        point.y = y;
     }
 
-    public float getCurrentX() {
-        return animation.getCurrentX();
+    /**
+     * Sets times in case of you want difference times table.
+     */
+    protected void setTimes(long timePerMove, long timePerDead) {
+        this.timePerMove = timePerMove;
+        this.timePerDead = timePerDead;
     }
 
-    public float getCurrentY() {
-        return animation.getCurrentY();
+    protected Animation getAnimation() {
+        return animation;
     }
 
-    public float getVelocityX() {
-        return animation.getVelocityX();
-    }
-
-    public float getVelocityY() {
-        return animation.getVelocityY();
+    protected Map getMap() {
+        return map;
     }
 
     /**
@@ -207,11 +249,16 @@ public class Movable implements Parcelable {
         y = parcel.readInt();
         point = new Point(x, y);
 
-        walking = parcel.readByte() != 0;
-        distance = parcel.readFloat();
-        target = parcel.readFloat();
+        dead = parcel.readByte() != 0;
+        animating = parcel.readByte() != 0;
+        distanceX = parcel.readFloat();
+        distanceY = parcel.readFloat();
+        targetX = parcel.readFloat();
+        targetY = parcel.readFloat();
         currentDirection = parcel.readInt();
         nextDirection = parcel.readInt();
+        timePerMove = parcel.readLong();
+        timePerDead = parcel.readLong();
         timePerDistance = parcel.readLong();
         timeUsed = parcel.readLong();
 
@@ -226,11 +273,16 @@ public class Movable implements Parcelable {
         parcel.writeInt(point.x);
         parcel.writeInt(point.y);
 
-        parcel.writeByte((byte) (walking ? 1 : 0));
-        parcel.writeFloat(distance);
-        parcel.writeFloat(target);
+        parcel.writeByte((byte) (dead ? 1 : 0));
+        parcel.writeByte((byte) (animating ? 1 : 0));
+        parcel.writeFloat(distanceX);
+        parcel.writeFloat(distanceY);
+        parcel.writeFloat(targetX);
+        parcel.writeFloat(targetY);
         parcel.writeInt(currentDirection);
         parcel.writeInt(nextDirection);
+        parcel.writeLong(timePerMove);
+        parcel.writeLong(timePerDead);
         parcel.writeLong(timePerDistance);
         parcel.writeLong(timeUsed);
 

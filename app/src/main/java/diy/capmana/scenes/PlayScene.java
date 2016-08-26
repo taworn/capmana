@@ -10,7 +10,9 @@ import diy.capmana.Game;
 import diy.capmana.R;
 import diy.capmana.Sprite;
 import diy.capmana.game.Divo;
+import diy.capmana.game.GameData;
 import diy.capmana.game.Map;
+import diy.capmana.game.Movable;
 import diy.capmana.game.Pacman;
 
 /**
@@ -32,6 +34,7 @@ public class PlayScene extends Scene {
         Log.d(TAG, "PlayScene created");
         acquire(bundle);
 
+        GameData.instance().clear();
         map = new Map();
         map.load();
         movDivoes = new Divo[4];
@@ -39,6 +42,7 @@ public class PlayScene extends Scene {
             movDivoes[i] = new Divo();
             movDivoes[i].setId(i);
             movDivoes[i].setMap(map);
+            GameData.instance().addDivo(movDivoes[i]);
         }
         movHero = new Pacman();
         movHero.setMap(map);
@@ -96,6 +100,9 @@ public class PlayScene extends Scene {
             map = savedInstanceState.getParcelable("map");
             movDivoes = (Divo[]) savedInstanceState.getParcelableArray("movDivoes");
             movHero = savedInstanceState.getParcelable("movHero");
+            for (int i = 0; i < 4; i++) {
+                GameData.instance().addDivo(movDivoes[i]);
+            }
             timeStart = System.currentTimeMillis();
         }
     }
@@ -103,25 +110,25 @@ public class PlayScene extends Scene {
     @Override
     public void onSwipeTop() {
         Log.d(TAG, "onSwipeTop() called");
-        movHero.move(Map.MOVE_UP);
+        movHero.move(Movable.MOVE_UP);
     }
 
     @Override
     public void onSwipeLeft() {
         Log.d(TAG, "onSwipeLeft() called");
-        movHero.move(Map.MOVE_LEFT);
+        movHero.move(Movable.MOVE_LEFT);
     }
 
     @Override
     public void onSwipeRight() {
         Log.d(TAG, "onSwipeRight() called");
-        movHero.move(Map.MOVE_RIGHT);
+        movHero.move(Movable.MOVE_RIGHT);
     }
 
     @Override
     public void onSwipeBottom() {
         Log.d(TAG, "onSwipeBottom() called");
-        movHero.move(Map.MOVE_DOWN);
+        movHero.move(Movable.MOVE_DOWN);
     }
 
     @Override
@@ -138,6 +145,7 @@ public class PlayScene extends Scene {
         movDivoes[2].play(timeUsed);
         movDivoes[3].play(timeUsed);
         movHero.play(timeUsed);
+        movHero.detect();
 
         // combines viewing and projecting matrices
         float[] projectionMatrix = new float[16];
@@ -146,6 +154,8 @@ public class PlayScene extends Scene {
         float[] scaleMatrix = new float[16];
         Matrix.orthoM(projectionMatrix, 0, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 25.0f);
         Matrix.setLookAtM(viewMatrix, 0,
+                //movHero.getCurrentX(), movHero.getCurrentY(), 1.5f,    // eye
+                //movHero.getCurrentX(), movHero.getCurrentY(), -15.0f,  // at
                 0.0f, 0.0f, 1.5f,    // eye
                 0.0f, 0.0f, -15.0f,  // at
                 0.0f, 1.0f, 0.0f);   // up
@@ -168,7 +178,7 @@ public class PlayScene extends Scene {
         // checks idling
         for (int i = 0; i < 4; i++) {
             if (movDivoes[i].isIdle())
-                movDivoes[i].nextMove();
+                movDivoes[i].nextAction();
         }
 
         computeFPS();
