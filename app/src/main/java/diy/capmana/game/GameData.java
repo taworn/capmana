@@ -135,6 +135,8 @@ public class GameData implements Parcelable {
     protected GameData(Parcel parcel) {
         singleton = this;
         score = parcel.readInt();
+        reverseMode = parcel.readByte() != 0;
+        reverseTime = parcel.readLong();
         divoLife = parcel.readInt();
         divoList.clear();
     }
@@ -145,6 +147,8 @@ public class GameData implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeInt(score);
+        parcel.writeByte((byte) (reverseMode ? 1 : 0));
+        parcel.writeLong(reverseTime);
         parcel.writeInt(divoLife);
     }
 

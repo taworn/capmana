@@ -102,10 +102,10 @@ public class PlayScene extends Scene {
             movDivoes = (Divo[]) savedInstanceState.getParcelableArray("movDivoes");
             movHero = savedInstanceState.getParcelable("movHero");
             //savedInstanceState.getParcelable("gameData");
-            GameData.instance().clearDivoList();
-            for (int i = 0; i < 4; i++) {
-                GameData.instance().addDivo(movDivoes[i]);
-            }
+            //GameData.instance().clearDivoList();
+            //for (int i = 0; i < 4; i++) {
+            //GameData.instance().addDivo(movDivoes[i]);
+            //}
             timeStart = System.currentTimeMillis();
         }
     }
