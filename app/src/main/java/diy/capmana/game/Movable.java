@@ -25,10 +25,14 @@ public class Movable implements Parcelable {
     public static final int ACTION_RIGHT = 1;
     public static final int ACTION_UP = 2;
     public static final int ACTION_DOWN = 3;
-    public static final int ACTION_DEAD_LEFT = 4;
-    public static final int ACTION_DEAD_RIGHT = 5;
-    public static final int ACTION_DEAD_UP = 6;
-    public static final int ACTION_DEAD_DOWN = 7;
+    public static final int ACTION_REVERSE_LEFT = 4;
+    public static final int ACTION_REVERSE_RIGHT = 5;
+    public static final int ACTION_REVERSE_UP = 6;
+    public static final int ACTION_REVERSE_DOWN = 7;
+    public static final int ACTION_DEAD_LEFT = 8;
+    public static final int ACTION_DEAD_RIGHT = 9;
+    public static final int ACTION_DEAD_UP = 10;
+    public static final int ACTION_DEAD_DOWN = 11;
 
     public static final int TIME_PER_ANI_FRAME = 250;
 
@@ -70,14 +74,26 @@ public class Movable implements Parcelable {
             if (!animating) {
                 PointF pf = new PointF(0, 0);
 
-                if (direction == MOVE_LEFT)
-                    animation.use(ACTION_LEFT);
-                else if (direction == MOVE_RIGHT)
-                    animation.use(ACTION_RIGHT);
-                else if (direction == MOVE_UP)
-                    animation.use(ACTION_UP);
-                else if (direction == MOVE_DOWN)
-                    animation.use(ACTION_DOWN);
+                if (!GameData.instance().isReverseMode()) {
+                    if (direction == MOVE_LEFT)
+                        animation.use(ACTION_LEFT);
+                    else if (direction == MOVE_RIGHT)
+                        animation.use(ACTION_RIGHT);
+                    else if (direction == MOVE_UP)
+                        animation.use(ACTION_UP);
+                    else if (direction == MOVE_DOWN)
+                        animation.use(ACTION_DOWN);
+                }
+                else {
+                    if (direction == MOVE_LEFT)
+                        animation.use(ACTION_REVERSE_LEFT);
+                    else if (direction == MOVE_RIGHT)
+                        animation.use(ACTION_REVERSE_RIGHT);
+                    else if (direction == MOVE_UP)
+                        animation.use(ACTION_REVERSE_UP);
+                    else if (direction == MOVE_DOWN)
+                        animation.use(ACTION_REVERSE_DOWN);
+                }
 
                 if (map.canMove(this, direction, point, pf)) {
                     distanceX = pf.x - animation.getCurrentX();

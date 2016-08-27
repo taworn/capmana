@@ -18,6 +18,8 @@ public class GameData implements Parcelable {
     private static GameData singleton = null;
 
     private int score = 0;
+    private boolean reverseMode = false;
+    private long reverseTime = 0;
     private int divoLife = 1;
     private List<Divo> divoList = new ArrayList<>();
 
@@ -34,6 +36,7 @@ public class GameData implements Parcelable {
      * Clears data.
      */
     public void clear() {
+        reverseMode = false;
         divoLife = 5;
         divoList.clear();
     }
@@ -103,6 +106,26 @@ public class GameData implements Parcelable {
         }
         else if (item == 0x02) {
             score += 100;
+            reverseMode = true;
+            reverseTime = 1000 * 3;
+        }
+    }
+
+    /**
+     * Checks current time is reverse mode.
+     */
+    public boolean isReverseMode() {
+        return reverseMode;
+    }
+
+    /**
+     * Updates current time frame.
+     */
+    public void update(long timeUsed) {
+        if (reverseMode) {
+            reverseTime -= timeUsed;
+            if (reverseTime <= 0)
+                reverseMode = false;
         }
     }
 

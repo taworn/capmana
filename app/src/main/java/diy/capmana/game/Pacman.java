@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import diy.capmana.Animation;
+import diy.capmana.Game;
 
 /**
  * A pacman class.
@@ -22,6 +23,11 @@ public class Pacman extends Movable implements Parcelable {
         getAnimation().add(ACTION_RIGHT, 2, 4, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
         getAnimation().add(ACTION_UP, 4, 6, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
         getAnimation().add(ACTION_DOWN, 6, 8, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
+        getAnimation().add(ACTION_REVERSE_LEFT, 0, 2, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
+        getAnimation().add(ACTION_REVERSE_RIGHT, 2, 4, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
+        getAnimation().add(ACTION_REVERSE_UP, 4, 6, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
+        getAnimation().add(ACTION_REVERSE_DOWN, 6, 8, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
+        getAnimation().add(ACTION_DEAD_DOWN, 60, 64, Animation.ON_END_HIDDEN, 500);
         getAnimation().use(ACTION_LEFT);
     }
 
@@ -29,38 +35,59 @@ public class Pacman extends Movable implements Parcelable {
      * Detects enemies within rectangle.
      */
     public void detect() {
-        final float RANGE = 0.03125f;
-        float x = getCurrentX();
-        float y = getCurrentY();
-        float left = x - RANGE;
-        float top = y + RANGE;
-        float right = x + RANGE;
-        float bottom = y - RANGE;
+        if (!isDead()) {
+            final float RANGE = 0.03125f;
+            float x = getCurrentX();
+            float y = getCurrentY();
+            float left = x - RANGE;
+            float top = y + RANGE;
+            float right = x + RANGE;
+            float bottom = y - RANGE;
 
-        GameData gameData = GameData.instance();
-        int count = gameData.getDivoCount();
-        int i = 0;
-        boolean detected = false;
-        while (i < count) {
-            Divo divo = gameData.getDivo(i);
-            float divoX = divo.getCurrentX();
-            float divoY = divo.getCurrentY();
+            GameData gameData = GameData.instance();
+            int count = gameData.getDivoCount();
+            int i = 0;
+            boolean detected = false;
+            while (i < count) {
+                Divo divo = gameData.getDivo(i);
+                float divoX = divo.getCurrentX();
+                float divoY = divo.getCurrentY();
 
-            if (!divo.isDead()) {
-                if (left < divoX && top > divoY && divoX < right && divoY > bottom) {
-                    detected = true;
-                    break;
+                if (!divo.isDead()) {
+                    if (left < divoX && top > divoY && divoX < right && divoY > bottom) {
+                        detected = true;
+                        break;
+                    }
                 }
+
+                i++;
             }
 
-            i++;
+            if (detected) {
+                if (!GameData.instance().isReverseMode()) {
+                    Divo divo = gameData.getDivo(i);
+                    divo.kill();
+                    Log.d(TAG, "eat Divo #" + i);
+                }
+                else {
+                    kill();
+                    Log.d(TAG, "Pacman dead");
+                }
+            }
         }
+    }
 
-        if (detected) {
-            Divo divo = gameData.getDivo(i);
-            divo.kill();
-            Log.d(TAG, "eat Divo #" + i);
+    public void play(long timeUsed) {
+        super.play(timeUsed);
+        if (isDead()) {
+            if (getAnimation().isEnded())
+                Game.instance().changeScene(Game.SCENE_GAMEOVER);
         }
+    }
+
+    public void kill() {
+        super.kill();
+        getAnimation().use(ACTION_DEAD_DOWN);
     }
 
     public void setMap(Map map) {

@@ -143,6 +143,7 @@ public class PlayScene extends Scene {
         long timeUsed = System.currentTimeMillis() - timeStart;
         timeStart = System.currentTimeMillis();
         //Log.d(TAG, "used " + timeUsed + " ms");
+        GameData.instance().update(timeUsed);
         movDivoes[0].play(timeUsed);
         movDivoes[1].play(timeUsed);
         movDivoes[2].play(timeUsed);

@@ -144,6 +144,10 @@ public class Animation implements Parcelable {
             currentY += velocityY;
     }
 
+    public boolean isEnded() {
+        return ending;
+    }
+
     /**
      * Constructs an animation with parcel.
      */
