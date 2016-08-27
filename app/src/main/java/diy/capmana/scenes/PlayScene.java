@@ -57,7 +57,7 @@ public class PlayScene extends Scene {
     public void acquire(@Nullable Bundle bundle) {
         Log.d(TAG, "acquire() called");
         super.acquire(bundle);
-        spriteMap = new Sprite(Game.instance().getContext(), R.drawable.map, 2, 2);
+        spriteMap = new Sprite(Game.instance().getContext(), R.drawable.map0, 2, 2);
         spritePacman = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
     }
 
