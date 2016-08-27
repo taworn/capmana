@@ -9,17 +9,23 @@ import android.support.annotation.NonNull;
  */
 public class Animation implements Parcelable {
 
+    public static final int ON_END_CONTINUE = 0;
+    public static final int ON_END_KEEP_LAST_FRAME = 1;
+    public static final int ON_END_HIDDEN = 2;
+
     private static final int PLAYING_MAX = 16;
 
     private static class PLAYING {
         int start;
         int end;
+        int onEnd;
         int time;
     }
 
     private PLAYING[] plays = new PLAYING[PLAYING_MAX];
     private int currentPlaying;
     private int currentImage;
+    private boolean ending;
 
     private float currentX, currentY;
     private float velocityX, velocityY;
@@ -34,6 +40,7 @@ public class Animation implements Parcelable {
             plays[i] = new PLAYING();
         currentPlaying = -1;
         currentImage = 0;
+        ending = false;
         currentX = 0;
         currentY = 0;
         velocityX = 0;
@@ -44,10 +51,11 @@ public class Animation implements Parcelable {
     /**
      * Adds a playing animation, only 16 set allow.
      */
-    public void add(int number, int start, int end, int time) {
+    public void add(int number, int start, int end, int onEnd, int time) {
         assert number >= 0 && number < PLAYING_MAX;
         plays[number].start = start;
         plays[number].end = end;
+        plays[number].onEnd = onEnd;
         plays[number].time = time;
     }
 
@@ -59,6 +67,7 @@ public class Animation implements Parcelable {
         if (number != currentPlaying) {
             currentPlaying = number;
             currentImage = plays[number].start;
+            ending = false;
             timeStart = System.currentTimeMillis();
         }
     }
@@ -66,15 +75,34 @@ public class Animation implements Parcelable {
     /**
      * Draws animation.
      */
-    public void draw(@NonNull float[] mvpMatrix, @NonNull Sprite sprite) {
-        sprite.draw(mvpMatrix, currentImage);
+    public void draw(@NonNull final float[] mvpMatrix, @NonNull Sprite sprite) {
+        if (!ending) {
+            sprite.draw(mvpMatrix, currentImage);
 
-        long usage = System.currentTimeMillis() - timeStart;
-        if (usage > plays[currentPlaying].time) {
-            currentImage++;
-            if (currentImage >= plays[currentPlaying].end)
-                currentImage = plays[currentPlaying].start;
-            timeStart = System.currentTimeMillis();
+            long usage = System.currentTimeMillis() - timeStart;
+            if (usage > plays[currentPlaying].time) {
+                currentImage++;
+                if (currentImage >= plays[currentPlaying].end) {
+                    switch (plays[currentPlaying].onEnd) {
+                        default:
+                        case ON_END_CONTINUE:
+                            currentImage = plays[currentPlaying].start;
+                            break;
+                        case ON_END_KEEP_LAST_FRAME:
+                            currentImage--;
+                            ending = true;
+                            break;
+                        case ON_END_HIDDEN:
+                            ending = true;
+                            break;
+                    }
+                }
+                timeStart = System.currentTimeMillis();
+            }
+        }
+        else {
+            if (plays[currentPlaying].onEnd == ON_END_KEEP_LAST_FRAME)
+                sprite.draw(mvpMatrix, currentImage);
         }
     }
 
@@ -123,10 +151,12 @@ public class Animation implements Parcelable {
         for (int i = 0; i < PLAYING_MAX; i++) {
             plays[i].start = parcel.readInt();
             plays[i].end = parcel.readInt();
+            plays[i].onEnd = parcel.readInt();
             plays[i].time = parcel.readInt();
         }
         currentPlaying = parcel.readInt();
         currentImage = parcel.readInt();
+        ending = parcel.readByte() != 0;
         currentX = parcel.readInt();
         currentY = parcel.readInt();
         velocityX = parcel.readInt();
@@ -142,10 +172,12 @@ public class Animation implements Parcelable {
         for (int i = 0; i < PLAYING_MAX; i++) {
             parcel.writeInt(plays[i].start);
             parcel.writeInt(plays[i].end);
+            parcel.writeInt(plays[i].onEnd);
             parcel.writeInt(plays[i].time);
         }
         parcel.writeInt(currentPlaying);
         parcel.writeInt(currentImage);
+        parcel.writeByte((byte) (ending ? 1 : 0));
         parcel.writeFloat(currentX);
         parcel.writeFloat(currentY);
         parcel.writeFloat(velocityX);

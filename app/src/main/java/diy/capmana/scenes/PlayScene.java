@@ -88,6 +88,7 @@ public class PlayScene extends Scene {
             savedInstanceState.putParcelable("map", map);
             savedInstanceState.putParcelableArray("movDivoes", movDivoes);
             savedInstanceState.putParcelable("movHero", movHero);
+            //savedInstanceState.putParcelable("gameData", GameData.instance());
         }
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -100,6 +101,8 @@ public class PlayScene extends Scene {
             map = savedInstanceState.getParcelable("map");
             movDivoes = (Divo[]) savedInstanceState.getParcelableArray("movDivoes");
             movHero = savedInstanceState.getParcelable("movHero");
+            //savedInstanceState.getParcelable("gameData");
+            GameData.instance().clearDivoList();
             for (int i = 0; i < 4; i++) {
                 GameData.instance().addDivo(movDivoes[i]);
             }

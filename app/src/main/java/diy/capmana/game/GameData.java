@@ -17,21 +17,39 @@ public class GameData implements Parcelable {
 
     private static GameData singleton = null;
 
+    private int score = 0;
+    private int divoLife = 1;
     private List<Divo> divoList = new ArrayList<>();
 
     /**
-     * Constructs the gamedata.
+     * Constructs the game data.
      */
     public GameData() {
         assert singleton == null;
         singleton = this;
+        divoList.clear();
     }
 
     /**
      * Clears data.
      */
     public void clear() {
+        divoLife = 5;
         divoList.clear();
+    }
+
+    /**
+     * Decrease divo life by one.
+     */
+    public void divoLifeDecrease() {
+        divoLife--;
+    }
+
+    /**
+     * Checks divo can respawn.
+     */
+    public boolean divoCanRelife() {
+        return divoLife > 0;
     }
 
     /**
@@ -56,9 +74,46 @@ public class GameData implements Parcelable {
     }
 
     /**
+     * Clears divo list.  This function should use in Scene.onRestoreInstanceState() only.
+     */
+    public void clearDivoList() {
+        divoList.clear();
+    }
+
+    /**
+     * Checks that all divoes dead.
+     */
+    public boolean checkAllDivoDead() {
+        int i = 0;
+        while (i < divoList.size()) {
+            if (!divoList.get(i).isDead())
+                return false;
+            else
+                i++;
+        }
+        return true;
+    }
+
+    /**
+     * Retrieves bonus after get item.
+     */
+    public void getBonus(int item) {
+        if (item == 0x01) {
+            score += 10;
+        }
+        else if (item == 0x02) {
+            score += 100;
+        }
+    }
+
+    /**
      * Constructs the game data with parcel.
      */
     protected GameData(Parcel parcel) {
+        singleton = this;
+        score = parcel.readInt();
+        divoLife = parcel.readInt();
+        divoList.clear();
     }
 
     /**
@@ -66,6 +121,8 @@ public class GameData implements Parcelable {
      */
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeInt(score);
+        parcel.writeInt(divoLife);
     }
 
     @Override

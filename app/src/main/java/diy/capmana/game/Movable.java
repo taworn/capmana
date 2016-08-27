@@ -25,7 +25,10 @@ public class Movable implements Parcelable {
     public static final int ACTION_RIGHT = 1;
     public static final int ACTION_UP = 2;
     public static final int ACTION_DOWN = 3;
-    public static final int ACTION_DEAD = 4;
+    public static final int ACTION_DEAD_LEFT = 4;
+    public static final int ACTION_DEAD_RIGHT = 5;
+    public static final int ACTION_DEAD_UP = 6;
+    public static final int ACTION_DEAD_DOWN = 7;
 
     public static final int TIME_PER_ANI_FRAME = 250;
 
@@ -144,6 +147,13 @@ public class Movable implements Parcelable {
     }
 
     /**
+     * Relife your life.
+     */
+    public void relife() {
+        dead = false;
+    }
+
+    /**
      * Checks whether movable is dead.
      */
     public boolean isDead() {
@@ -154,7 +164,7 @@ public class Movable implements Parcelable {
      * Checks whether movable is busing or idling.
      */
     public boolean isIdle() {
-        return !animating;
+        return !dead && !animating;
     }
 
     /**

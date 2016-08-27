@@ -30,6 +30,14 @@ public class Map implements Parcelable {
         }
     }
 
+    protected static class IntegerHolder {
+        public int value;
+
+        public IntegerHolder() {
+            value = 0;
+        }
+    }
+
     private int width = 0;
     private int height = 0;
     private int[] mapData = null;
@@ -258,10 +266,11 @@ public class Map implements Parcelable {
     /**
      * Checks whether that the floor has item.
      */
-    public boolean hasItem(Movable movable) {
+    public boolean checkAndGetItem(Movable movable, IntegerHolder item) {
         int index = movable.getY() * width + movable.getX();
         MapData data = new MapData();
         if ((mapData[index] & 0x10) == 0x10) {
+            item.value = imageData[index];
             imageData[index] = 0;
             mapData[index] &= ~0x10;
             itemCount--;
@@ -288,7 +297,7 @@ public class Map implements Parcelable {
         Matrix.translateM(translateMatrix, 0, 0, 0, 0);
         Matrix.multiplyMM(modelMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
         Matrix.multiplyMM(mvpMatrix, 0, viewProjectMatrix, 0, modelMatrix, 0);
-        sprite.drawBatch(mvpMatrix, horzBounds, vertBounds, imageData);
+        sprite.drawBatch(mvpMatrix, horzBounds, vertBounds, 0.0f, imageData);
     }
 
     /**

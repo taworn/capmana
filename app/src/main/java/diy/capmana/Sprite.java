@@ -113,7 +113,7 @@ public class Sprite {
     /**
      * Draws batch sprites.
      */
-    public void drawBatch(@NonNull float[] mvpMatrix, List<Float> horz, List<Float> vert, int[] imageIndex) {
+    public void drawBatch(@NonNull float[] mvpMatrix, List<Float> horz, List<Float> vert, float z, int[] imageIndex) {
         TextureShader shader = Game.instance().getTextureShader();
         shader.useProgram();
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
@@ -141,42 +141,42 @@ public class Sprite {
                 // 1
                 verticesData[indices++] = horz.get(i + 1);
                 verticesData[indices++] = vert.get(j + 1);
-                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = z;
                 verticesData[indices++] = u1;
                 verticesData[indices++] = v1;
 
                 // 2
                 verticesData[indices++] = horz.get(i + 1);
                 verticesData[indices++] = vert.get(j);
-                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = z;
                 verticesData[indices++] = u1;
                 verticesData[indices++] = v0;
 
                 // 3
                 verticesData[indices++] = horz.get(i);
                 verticesData[indices++] = vert.get(j + 1);
-                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = z;
                 verticesData[indices++] = u0;
                 verticesData[indices++] = v1;
 
                 // 4
                 verticesData[indices++] = horz.get(i + 1);
                 verticesData[indices++] = vert.get(j);
-                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = z;
                 verticesData[indices++] = u1;
                 verticesData[indices++] = v0;
 
                 // 5
                 verticesData[indices++] = horz.get(i);
                 verticesData[indices++] = vert.get(j);
-                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = z;
                 verticesData[indices++] = u0;
                 verticesData[indices++] = v0;
 
                 // 6
                 verticesData[indices++] = horz.get(i);
                 verticesData[indices++] = vert.get(j + 1);
-                verticesData[indices++] = 0.0f;
+                verticesData[indices++] = z;
                 verticesData[indices++] = u0;
                 verticesData[indices++] = v1;
             }
