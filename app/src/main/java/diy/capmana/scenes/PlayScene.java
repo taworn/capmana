@@ -36,7 +36,9 @@ public class PlayScene extends Scene {
 
         GameData.instance().clear();
         map = new Map();
-        map.load();
+        map.load(R.raw.debug);
+        //map.load(R.raw.test0);
+        //map.load(R.raw.test1);
         movDivoes = new Divo[4];
         for (int i = 0; i < 4; i++) {
             movDivoes[i] = new Divo();
@@ -157,12 +159,18 @@ public class PlayScene extends Scene {
         float[] viewProjectMatrix = new float[16];
         float[] scaleMatrix = new float[16];
         Matrix.orthoM(projectionMatrix, 0, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 25.0f);
-        Matrix.setLookAtM(viewMatrix, 0,
-                //movHero.getCurrentX(), movHero.getCurrentY(), 1.5f,    // eye
-                //movHero.getCurrentX(), movHero.getCurrentY(), -15.0f,  // at
-                0.0f, 0.0f, 1.5f,    // eye
-                0.0f, 0.0f, -15.0f,  // at
-                0.0f, 1.0f, 0.0f);   // up
+        if (map.getWidth() > 16 || map.getHeight() > 16) {
+            Matrix.setLookAtM(viewMatrix, 0,
+                    movHero.getCurrentX(), movHero.getCurrentY(), 1.5f,    // eye
+                    movHero.getCurrentX(), movHero.getCurrentY(), -15.0f,  // at
+                    0.0f, 1.0f, 0.0f);   // up
+        }
+        else {
+            Matrix.setLookAtM(viewMatrix, 0,
+                    0.0f, 0.0f, 1.5f,    // eye
+                    0.0f, 0.0f, -15.0f,  // at
+                    0.0f, 1.0f, 0.0f);   // up
+        }
         Matrix.multiplyMM(viewProjectMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         // drawing map
