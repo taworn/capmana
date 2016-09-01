@@ -6,6 +6,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import diy.capmana.Animation;
 import diy.capmana.Game;
 
@@ -18,7 +21,7 @@ public class Pacman extends Movable implements Parcelable {
      * Constructs the pacman.
      */
     public Pacman() {
-        setTimes(200, 1000);
+        setTimes(150, 1000);
         getAnimation().add(ACTION_LEFT, 0, 2, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
         getAnimation().add(ACTION_RIGHT, 2, 4, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
         getAnimation().add(ACTION_UP, 4, 6, Animation.ON_END_CONTINUE, TIME_PER_ANI_FRAME);
@@ -47,7 +50,7 @@ public class Pacman extends Movable implements Parcelable {
             GameData gameData = GameData.instance();
             int count = gameData.getDivoCount();
             int i = 0;
-            boolean detected = false;
+            List<Divo> detectedList = new ArrayList<>();
             while (i < count) {
                 Divo divo = gameData.getDivo(i);
                 float divoX = divo.getCurrentX();
@@ -55,18 +58,16 @@ public class Pacman extends Movable implements Parcelable {
 
                 if (!divo.isDead()) {
                     if (left < divoX && top > divoY && divoX < right && divoY > bottom) {
-                        detected = true;
-                        break;
+                        detectedList.add(divo);
                     }
                 }
 
                 i++;
             }
 
-            if (detected) {
+            for (int j = 0; j < detectedList.size(); j++) {
                 if (!GameData.instance().isReverseMode()) {
-                    Divo divo = gameData.getDivo(i);
-                    divo.kill();
+                    detectedList.get(j).kill();
                     Log.d(TAG, "eat Divo #" + i);
                 }
                 else {

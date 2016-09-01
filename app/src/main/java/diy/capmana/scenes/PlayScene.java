@@ -1,11 +1,13 @@
 package diy.capmana.scenes;
 
+import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import diy.capmana.Font;
 import diy.capmana.Game;
 import diy.capmana.R;
 import diy.capmana.Sprite;
@@ -192,6 +194,16 @@ public class PlayScene extends Scene {
             if (movDivoes[i].isIdle())
                 movDivoes[i].nextAction();
         }
+
+        Game game = Game.instance();
+        float sx = 2.0f / game.getScreenWidth();
+        float sy = 2.0f / game.getScreenHeight();
+
+        Font font = game.getMediumFont();
+        int score = GameData.instance().getScore();
+        String scoreString = Integer.toString(score);
+        PointF measure = font.measure(scoreString, sx, sy);
+        font.draw(scoreString, -1.0f, 1.0f - measure.y, sx, sy);
 
         computeFPS();
     }

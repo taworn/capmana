@@ -42,6 +42,13 @@ public class GameData implements Parcelable {
     }
 
     /**
+     * Gets current score.
+     */
+    public int getScore() {
+        return score;
+    }
+
+    /**
      * Decrease divo life by one.
      */
     public void divoLifeDecrease() {
