@@ -83,6 +83,7 @@ public class PlayScene extends Scene {
     public void onResume() {
         Log.d(TAG, "onResume()");
         super.onResume();
+        timeStart = System.currentTimeMillis();
     }
 
     @Override

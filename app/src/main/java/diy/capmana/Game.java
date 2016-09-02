@@ -17,6 +17,7 @@ import diy.capmana.game.GameData;
 import diy.capmana.scenes.GameOverScene;
 import diy.capmana.scenes.PlayScene;
 import diy.capmana.scenes.Scene;
+import diy.capmana.scenes.StageScene;
 import diy.capmana.scenes.TitleScene;
 import diy.capmana.scenes.WinScene;
 import diy.capmana.shaders.NormalShader;
@@ -163,7 +164,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
                 scene = new TitleScene(bundle);
                 break;
             case SCENE_STAGE:
-                //scene = new StageScene(bundle);
+                scene = new StageScene(bundle);
                 break;
             case SCENE_PLAY:
                 scene = new PlayScene(bundle);

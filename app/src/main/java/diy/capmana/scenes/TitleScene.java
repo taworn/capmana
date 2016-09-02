@@ -107,13 +107,13 @@ public class TitleScene extends Scene {
     @Override
     public void onSwipeTop() {
         Log.d(TAG, "onSwipeTop() called");
-        changeScene(Game.SCENE_PLAY);
+        changeScene(Game.SCENE_STAGE);
     }
 
     @Override
     public void onSwipeBottom() {
         Log.d(TAG, "onSwipeBottom() called");
-        changeScene(Game.SCENE_PLAY);
+        changeScene(Game.SCENE_STAGE);
     }
 
     @Override
