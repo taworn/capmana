@@ -8,6 +8,7 @@ import android.util.Log;
 
 import diy.capmana.Font;
 import diy.capmana.Game;
+import diy.capmana.game.GameData;
 
 /**
  * Stage scene.
@@ -25,6 +26,7 @@ public class StageScene extends Scene {
         acquire(bundle);
         timeStart = System.currentTimeMillis();
         timeUsed = 0;
+        Log.d(TAG, "start stage " + GameData.instance().getStage() + 1);
         if (bundle != null) {
             onRestoreInstanceState(bundle);
         }
@@ -101,7 +103,7 @@ public class StageScene extends Scene {
         float sy = 2.0f / game.getScreenHeight();
 
         Font font = game.getLargeFont();
-        String buffer = "Stage " + 1;
+        String buffer = "Stage " + (GameData.instance().getStage() + 1);
         PointF measure = font.measure(buffer, sx, sy);
         font.draw(buffer, 0 - (measure.x / 2), 0.0f, sx, sy);
 

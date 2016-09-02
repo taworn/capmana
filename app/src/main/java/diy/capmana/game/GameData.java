@@ -18,6 +18,7 @@ public class GameData implements Parcelable {
     private static GameData singleton = null;
 
     private int score = 0;
+    private int stage = 0;
     private boolean reverseMode = false;
     private long reverseTime = 0;
     private int divoLife = 1;
@@ -33,11 +34,20 @@ public class GameData implements Parcelable {
     }
 
     /**
+     * Resets all game data.
+     */
+    public void reset() {
+        score = 0;
+        stage = 0;
+        clear();
+    }
+
+    /**
      * Clears data.
      */
     public void clear() {
         reverseMode = false;
-        divoLife = 5;
+        divoLife = 5 * (stage + 1);
         divoList.clear();
     }
 
@@ -46,6 +56,27 @@ public class GameData implements Parcelable {
      */
     public int getScore() {
         return score;
+    }
+
+    /**
+     * Gets current stage.
+     */
+    public int getStage() {
+        return stage;
+    }
+
+    /**
+     * Advances to next stage.
+     *
+     * @return Returns true if next stage, otherwise, it is false and win the game.
+     */
+    public boolean nextStage() {
+        if (stage < 2) {
+            stage++;
+            return true;
+        }
+        else
+            return false;
     }
 
     /**
@@ -142,6 +173,7 @@ public class GameData implements Parcelable {
     protected GameData(Parcel parcel) {
         singleton = this;
         score = parcel.readInt();
+        stage = parcel.readInt();
         reverseMode = parcel.readByte() != 0;
         reverseTime = parcel.readLong();
         divoLife = parcel.readInt();
@@ -154,6 +186,7 @@ public class GameData implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeInt(score);
+        parcel.writeInt(stage);
         parcel.writeByte((byte) (reverseMode ? 1 : 0));
         parcel.writeLong(reverseTime);
         parcel.writeInt(divoLife);

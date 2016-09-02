@@ -13,6 +13,7 @@ import diy.capmana.Font;
 import diy.capmana.Game;
 import diy.capmana.R;
 import diy.capmana.Sprite;
+import diy.capmana.game.GameData;
 
 /**
  * Title game scene.
@@ -107,12 +108,14 @@ public class TitleScene extends Scene {
     @Override
     public void onSwipeTop() {
         Log.d(TAG, "onSwipeTop() called");
+        GameData.instance().reset();
         changeScene(Game.SCENE_STAGE);
     }
 
     @Override
     public void onSwipeBottom() {
         Log.d(TAG, "onSwipeBottom() called");
+        GameData.instance().reset();
         changeScene(Game.SCENE_STAGE);
     }
 

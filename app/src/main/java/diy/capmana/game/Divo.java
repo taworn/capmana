@@ -65,7 +65,7 @@ public class Divo extends Movable implements Parcelable {
             else {
                 if (GameData.instance().checkAllDivoDead()) {
                     Log.d(TAG, "all Divoes are dead");
-                    Game.instance().changeScene(Game.SCENE_WIN);
+                    Game.instance().changeScene(Game.SCENE_NEXT_STAGE);
                 }
             }
         }

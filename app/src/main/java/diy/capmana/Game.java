@@ -15,6 +15,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import diy.capmana.game.GameData;
 import diy.capmana.scenes.GameOverScene;
+import diy.capmana.scenes.NextStageScene;
 import diy.capmana.scenes.PlayScene;
 import diy.capmana.scenes.Scene;
 import diy.capmana.scenes.StageScene;
@@ -32,9 +33,10 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     public static final int SCENE_DEFAULT = 0;
     public static final int SCENE_TITLE = 1;
     public static final int SCENE_STAGE = 2;
-    public static final int SCENE_PLAY = 3;
-    public static final int SCENE_GAMEOVER = 4;
-    public static final int SCENE_WIN = 5;
+    public static final int SCENE_NEXT_STAGE = 3;
+    public static final int SCENE_PLAY = 4;
+    public static final int SCENE_GAMEOVER = 5;
+    public static final int SCENE_WIN = 6;
 
     public static Game instance() {
         return singleton;
@@ -47,7 +49,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     private Context context;
     private GestureDetector detector;
     private Bundle bundle;
-    private int currentSceneId = SCENE_GAMEOVER;
+    private int currentSceneId = SCENE_TITLE;
 
     private NormalShader normalShader;
     private TextShader textShader;
@@ -164,6 +166,9 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
                 break;
             case SCENE_STAGE:
                 scene = new StageScene(bundle);
+                break;
+            case SCENE_NEXT_STAGE:
+                scene = new NextStageScene(bundle);
                 break;
             case SCENE_PLAY:
                 scene = new PlayScene(bundle);
