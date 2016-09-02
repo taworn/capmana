@@ -47,7 +47,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     private Context context;
     private GestureDetector detector;
     private Bundle bundle;
-    private int currentSceneId;
+    private int currentSceneId = SCENE_GAMEOVER;
 
     private NormalShader normalShader;
     private TextShader textShader;
@@ -71,7 +71,6 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         this.context = context;
         detector = new GestureDetector(context, new GestureListener());
         bundle = null;
-        currentSceneId = SCENE_TITLE;
         scene = null;
         gameData = new GameData();
     }
