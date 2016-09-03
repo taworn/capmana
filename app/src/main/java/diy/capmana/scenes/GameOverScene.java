@@ -1,5 +1,6 @@
 package diy.capmana.scenes;
 
+import android.content.res.Configuration;
 import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -121,17 +122,32 @@ public class GameOverScene extends Scene {
         Matrix.setIdentityM(scaleMatrix, 0);
         Matrix.scaleM(scaleMatrix, 0, 0.04f, 0.04f, 1.0f);
 
-        Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, -0.22f, -0.02f, 0.0f);
-        Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
-        Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        spriteUI.draw(mvpMatrix, 2);
+        if (Game.instance().getContext().getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            Matrix.setIdentityM(translateMatrix, 0);
+            Matrix.translateM(translateMatrix, 0, -0.32f, -0.05f, 0.0f);
+            Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+            spriteUI.draw(mvpMatrix, 2);
 
-        Matrix.setIdentityM(translateMatrix, 0);
-        Matrix.translateM(translateMatrix, 0, -0.22f, -0.19f, 0.0f);
-        Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
-        Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
-        spriteUI.draw(mvpMatrix, 3);
+            Matrix.setIdentityM(translateMatrix, 0);
+            Matrix.translateM(translateMatrix, 0, -0.32f, -0.20f, 0.0f);
+            Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+            spriteUI.draw(mvpMatrix, 3);
+        }
+        else {
+            Matrix.setIdentityM(translateMatrix, 0);
+            Matrix.translateM(translateMatrix, 0, -0.22f, -0.02f, 0.0f);
+            Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+            spriteUI.draw(mvpMatrix, 2);
+
+            Matrix.setIdentityM(translateMatrix, 0);
+            Matrix.translateM(translateMatrix, 0, -0.22f, -0.19f, 0.0f);
+            Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+            spriteUI.draw(mvpMatrix, 3);
+        }
 
         computeFPS();
     }
