@@ -1,11 +1,15 @@
 package diy.capmana.game;
 
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import diy.capmana.Game;
 
 /**
  * A GameData class.
@@ -38,6 +42,9 @@ public class GameData implements Parcelable {
         assert singleton == null;
         singleton = this;
         divoList.clear();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(Game.instance().getContext());
+        score = pref.getInt("score", 0);
+        stage = pref.getInt("stage", 0);
     }
 
     /**
@@ -56,6 +63,17 @@ public class GameData implements Parcelable {
         reverseMode = false;
         divoLife = 5 * (stage + 1);
         divoList.clear();
+    }
+
+    /**
+     * Saves data.
+     */
+    public void save() {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(Game.instance().getContext());
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("score", score);
+        editor.putInt("stage", stage);
+        editor.apply();
     }
 
     /**

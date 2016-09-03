@@ -1,5 +1,6 @@
 package diy.capmana.scenes;
 
+import android.content.res.Configuration;
 import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
@@ -24,9 +25,11 @@ public class TitleScene extends Scene {
 
     private Font titleFont;
     private Sprite sprite;
+    private Sprite spriteUI;
     private Animation aniDivo;
     private Animation aniHero;
     private float modelX;
+    private int menuIndex;
 
     public TitleScene(@Nullable Bundle bundle) {
         super(bundle);
@@ -49,6 +52,7 @@ public class TitleScene extends Scene {
         aniHero.use(0);
 
         modelX = 0.0f;
+        menuIndex = 0;
 
         if (bundle != null) {
             onRestoreInstanceState(bundle);
@@ -61,11 +65,13 @@ public class TitleScene extends Scene {
         super.acquire(bundle);
         titleFont = new Font(Game.instance().getContext(), 64, 0xFFFFFF80, Typeface.create((Typeface) null, Typeface.BOLD));
         sprite = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
+        spriteUI = new Sprite(Game.instance().getContext(), R.drawable.ui, 2, 2);
     }
 
     @Override
     public void release() {
         Log.d(TAG, "release() called");
+        spriteUI.release();
         sprite.release();
         titleFont.release();
         super.release();
@@ -115,7 +121,7 @@ public class TitleScene extends Scene {
     @Override
     public void onSwipeBottom() {
         Log.d(TAG, "onSwipeBottom() called");
-        GameData.instance().reset();
+        //GameData.instance().reset();
         changeScene(Game.SCENE_STAGE);
     }
 
@@ -131,10 +137,14 @@ public class TitleScene extends Scene {
         PointF measure = titleFont.measure(title, sx, sy);
         titleFont.draw(title, 0 - (measure.x / 2), 0.3f, sx, sy);
 
+        String buffer;
         Font font = game.getMediumFont();
-        String menu = "Swipe up/down to Start";
-        measure = font.measure(menu, sx, sy);
-        font.draw(menu, 0 - (measure.x / 2), -0.5f, sx, sy);
+        buffer = "Start";
+        measure = font.measure(buffer, sx, sy);
+        font.draw(buffer, 0 - (measure.x / 2), -0.10f, sx, sy);
+        buffer = "Continue";
+        measure = font.measure(buffer, sx, sy);
+        font.draw(buffer, 0 - (measure.x / 2), -0.25f, sx, sy);
 
         float[] projectionMatrix = new float[16];
         float[] viewMatrix = new float[16];
@@ -168,6 +178,36 @@ public class TitleScene extends Scene {
         modelX -= 0.01f;
         if (modelX < -1.0f)
             modelX = 1.0f;
+
+        Matrix.setIdentityM(scaleMatrix, 0);
+        Matrix.scaleM(scaleMatrix, 0, 0.04f, 0.04f, 1.0f);
+
+        if (Game.instance().getContext().getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            Matrix.setIdentityM(translateMatrix, 0);
+            Matrix.translateM(translateMatrix, 0, -0.32f, -0.05f, 0.0f);
+            Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+            spriteUI.draw(mvpMatrix, 2);
+
+            Matrix.setIdentityM(translateMatrix, 0);
+            Matrix.translateM(translateMatrix, 0, -0.32f, -0.20f, 0.0f);
+            Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+            spriteUI.draw(mvpMatrix, 3);
+        }
+        else {
+            Matrix.setIdentityM(translateMatrix, 0);
+            Matrix.translateM(translateMatrix, 0, -0.22f, -0.02f, 0.0f);
+            Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+            spriteUI.draw(mvpMatrix, 2);
+
+            Matrix.setIdentityM(translateMatrix, 0);
+            Matrix.translateM(translateMatrix, 0, -0.22f, -0.19f, 0.0f);
+            Matrix.multiplyMM(tempMatrix, 0, translateMatrix, 0, scaleMatrix, 0);
+            Matrix.multiplyMM(mvpMatrix, 0, combineViewProjectMatrix, 0, tempMatrix, 0);
+            spriteUI.draw(mvpMatrix, 3);
+        }
 
         computeFPS();
     }
