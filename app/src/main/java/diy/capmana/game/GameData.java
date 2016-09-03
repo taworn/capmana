@@ -24,6 +24,8 @@ public class GameData implements Parcelable {
     private int divoLife = 1;
     private List<Divo> divoList = new ArrayList<>();
 
+    private static final long maxReverseTime = 2500;
+
     /**
      * Constructs the game data.
      */
@@ -145,7 +147,7 @@ public class GameData implements Parcelable {
         else if (item == 0x02) {
             score += 100;
             reverseMode = true;
-            reverseTime = 1000 * 3;
+            reverseTime = maxReverseTime;
         }
     }
 

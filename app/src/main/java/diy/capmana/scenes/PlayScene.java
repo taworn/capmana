@@ -31,6 +31,17 @@ public class PlayScene extends Scene {
     private Pacman movHero;
     private long timeStart;
 
+    private static int[] mapFileTable = {
+            R.raw.stage01,
+            R.raw.stage02,
+            R.raw.stage03,
+    };
+
+    private static int[] imageFileTable = {
+            R.drawable.map0,
+            R.drawable.map1,
+    };
+
     public PlayScene(@Nullable Bundle bundle) {
         super(bundle);
         Log.d(TAG, "PlayScene created");
@@ -38,9 +49,13 @@ public class PlayScene extends Scene {
 
         GameData.instance().clear();
         map = new Map();
-        map.load(R.raw.debug);
-        //map.load(R.raw.test0);
-        //map.load(R.raw.test1);
+
+        int resource = mapFileTable[GameData.instance().getStage()];
+        //resource = R.raw.debug;
+        //resource = R.raw.test0;
+        //resource = R.raw.test1;
+
+        map.load(resource);
         movDivoes = new Divo[4];
         for (int i = 0; i < 4; i++) {
             movDivoes[i] = new Divo();
@@ -61,7 +76,9 @@ public class PlayScene extends Scene {
     public void acquire(@Nullable Bundle bundle) {
         Log.d(TAG, "acquire() called");
         super.acquire(bundle);
-        spriteMap = new Sprite(Game.instance().getContext(), R.drawable.map0, 2, 2);
+        int i = GameData.instance().getStage();
+        int resource = imageFileTable[i % 2];
+        spriteMap = new Sprite(Game.instance().getContext(), resource, 2, 2);
         spritePacman = new Sprite(Game.instance().getContext(), R.drawable.pacman, 8, 8);
     }
 
