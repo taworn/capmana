@@ -1,6 +1,8 @@
 package diy.capmana;
 
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -60,6 +62,10 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     private int screenWidth;
     private int screenHeight;
 
+    private SoundPool soundPool;
+    private int soundIdPacmanDead;
+    private int soundIdPacmanEat;
+
     private Scene scene;
     private GameData gameData;
 
@@ -72,6 +78,10 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
         this.context = context;
         detector = new GestureDetector(context, new GestureListener());
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        soundIdPacmanDead = soundPool.load(context, R.raw.pacman_dead, 1);
+        soundIdPacmanEat = soundPool.load(context, R.raw.pacman_eat, 1);
+
         bundle = null;
         scene = null;
         gameData = new GameData();
@@ -218,6 +228,14 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
     public int getScreenHeight() {
         return screenHeight;
+    }
+
+    public void playPacmanDead() {
+        soundPool.play(soundIdPacmanDead, 1.0f, 1.0f, 1, 0, 1.0f);
+    }
+
+    public void playPacmanEat() {
+        soundPool.play(soundIdPacmanEat, 1.0f, 1.0f, 1, 0, 1.0f);
     }
 
     /**

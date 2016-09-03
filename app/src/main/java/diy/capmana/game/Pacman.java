@@ -69,10 +69,12 @@ public class Pacman extends Movable implements Parcelable {
                 if (!GameData.instance().isReverseMode()) {
                     detectedList.get(j).kill();
                     Log.d(TAG, "eat Divo #" + i);
+                    Game.instance().playPacmanEat();
                 }
                 else {
                     kill();
                     Log.d(TAG, "Pacman dead");
+                    Game.instance().playPacmanDead();
                 }
             }
         }
