@@ -268,24 +268,32 @@ public class Map implements Parcelable {
         MapData data = new MapData();
 
         // left
-        data.from(mapData[y * width + x - 1]);
-        if (x > 0 && !data.block)
-            result |= Movable.MOVE_LEFT;
+        if (x > 0) {
+            data.from(mapData[y * width + x - 1]);
+            if (!data.block)
+                result |= Movable.MOVE_LEFT;
+        }
 
         // right
-        data.from(mapData[y * width + x + 1]);
-        if (x < width - 1 && !data.block)
-            result |= Movable.MOVE_RIGHT;
+        if (x < width - 1) {
+            data.from(mapData[y * width + x + 1]);
+            if (!data.block)
+                result |= Movable.MOVE_RIGHT;
+        }
 
         // up
-        data.from(mapData[(y - 1) * width + x]);
-        if (y > 0 && !data.block)
-            result |= Movable.MOVE_UP;
+        if (y > 0) {
+            data.from(mapData[(y - 1) * width + x]);
+            if (!data.block)
+                result |= Movable.MOVE_UP;
+        }
 
         // down
-        data.from(mapData[(y + 1) * width + x]);
-        if (y < height - 1 && !data.block)
-            result |= Movable.MOVE_DOWN;
+        if (y < height - 1) {
+            data.from(mapData[(y + 1) * width + x]);
+            if (!data.block)
+                result |= Movable.MOVE_DOWN;
+        }
 
         return result;
     }
