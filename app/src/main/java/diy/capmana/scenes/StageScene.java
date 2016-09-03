@@ -30,6 +30,7 @@ public class StageScene extends Scene {
         if (bundle != null) {
             onRestoreInstanceState(bundle);
         }
+        GameData.instance().clear();
     }
 
     @Override

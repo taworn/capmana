@@ -2,6 +2,7 @@ package diy.capmana.game;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +16,17 @@ public class GameData implements Parcelable {
         return singleton;
     }
 
+    public static void setInstance(@NonNull GameData gameData) {
+        singleton = gameData;
+    }
+
     private static GameData singleton = null;
 
     private int score = 0;
     private int stage = 0;
     private boolean reverseMode = false;
     private long reverseTime = 0;
-    private int divoLife = 1;
+    private int divoLife = 0;
     private List<Divo> divoList = new ArrayList<>();
 
     private static final long maxReverseTime = 2500;

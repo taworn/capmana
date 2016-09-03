@@ -67,7 +67,6 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
     private int soundIdPacmanEat;
 
     private Scene scene;
-    private GameData gameData;
 
     /**
      * Initializes the game engine.
@@ -84,7 +83,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
 
         bundle = null;
         scene = null;
-        gameData = new GameData();
+        new GameData();
     }
 
     public void onPause() {
@@ -104,7 +103,7 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         bundle = new Bundle();
         savedInstanceState.putBundle("bundle", bundle);
         savedInstanceState.putInt("currentSceneId", currentSceneId);
-        savedInstanceState.putParcelable("gameData", gameData);
+        savedInstanceState.putParcelable("gameData", GameData.instance());
         if (scene != null)
             scene.onSaveInstanceState(bundle);
     }
@@ -113,7 +112,9 @@ public class Game implements View.OnTouchListener, GLSurfaceView.Renderer {
         Log.d(TAG, "onRestoreInstanceState()");
         bundle = savedInstanceState.getBundle("bundle");
         currentSceneId = savedInstanceState.getInt("currentSceneId");
-        gameData = savedInstanceState.getParcelable("gameData");
+        GameData gameData = savedInstanceState.getParcelable("gameData");
+        if (gameData != null)
+            GameData.setInstance(gameData);
         if (scene != null)
             scene.onRestoreInstanceState(bundle);
     }
